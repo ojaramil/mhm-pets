@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 MHM Pets - Panel Administrador</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== DESIGN SYSTEM ===== */
+        :root {
+            --primary: #1b5e20;
+            --primary-light: #4caf50;
+            --accent: #ff7043;
+            --accent-dark: #e64a19;
+            --bg-dark: #0d1117;
+            --bg-card: #161b22;
+            --bg-elevated: #21262d;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --border: #30363d;
+            --success: #3fb950;
+            --warning: #d29922;
+            --danger: #f85149;
+            --font: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ===== HEADER ===== */
+        .admin-header {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+            border-bottom: 1px solid var(--border);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .admin-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-logo i {
+            font-size: 2rem;
+            color: var(--accent);
+        }
+
+        .admin-logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .admin-logo span {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: var(--bg-elevated);
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* ===== STATS GRID ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-icon.green {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--success);
+        }
+
+        .stat-icon.orange {
+            background: rgba(255, 112, 67, 0.2);
+            color: var(--accent);
+        }
+
+        .stat-icon.blue {
+            background: rgba(56, 139, 253, 0.2);
+            color: #388bfd;
+        }
+
+        .stat-icon.red {
+            background: rgba(248, 81, 73, 0.2);
+            color: var(--danger);
+        }
+
+        .stat-info h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-info p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* ===== CONFIGURATION PANEL ===== */
+        .config-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .config-panel h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: var(--accent);
+        }
+
+        .config-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+        }
+
+        /* ===== SUBSCRIBERS TABLE ===== */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .table-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 15px;
+        }
+
+        .search-box input {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            width: 200px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+        }
+
+        .search-box i {
+            color: var(--text-secondary);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--bg-elevated);
+        }
+
+        th,
+        td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        td {
+            font-size: 0.9rem;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-elevated);
+        }
+
+        /* ===== BADGES ===== */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(210, 153, 34, 0.2);
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: rgba(248, 81, 73, 0.2);
+            color: var(--danger);
+        }
+
+        .badge-info {
+            background: rgba(56, 139, 253, 0.2);
+            color: #388bfd;
+        }
+
+        .plan-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .plan-free {
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+        }
+
+        .plan-basic {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--primary-light);
+        }
+
+        .plan-pro {
+            background: rgba(255, 112, 67, 0.2);
+            color: var(--accent);
+        }
+
+        .plan-premium {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
+            color: #ffd700;
+        }
+
+        /* ===== ACTIONS DROPDOWN ===== */
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 15px 25px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .admin-header {
+                padding: 15px 20px;
+            }
+
+            .admin-container {
+                padding: 15px;
+            }
+
+            .table-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            th,
+            td {
+                padding: 12px 15px;
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* ===== NOTIFICATION TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transform: translateX(calc(100% + 30px));
+            transition: transform 0.3s ease;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast.warning {
+            border-left: 4px solid var(--warning);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header class="admin-header">
+        <div class="admin-logo">
+            <i class="fas fa-paw"></i>
+            <h1>MHM Pets Admin</h1>
+            <span>Panel Local</span>
+        </div>
+        <div class="admin-actions">
+            <button class="btn btn-secondary" onclick="refreshData()">
+                <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+            <button class="btn btn-primary" onclick="showAddSubscriberModal()">
+                <i class="fas fa-plus"></i> Nuevo Suscriptor
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="admin-container">
+        <!-- STATS -->
+        <div class="stats-grid fade-in">
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="stat-total">0</h3>
+                    <p>Total Suscriptores</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="stat-premium">0</h3>
+                    <p>Plan Premium</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="stat-revenue">$0</h3>
+                    <p>Ingresos Anuales</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon red">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="stat-expiring">0</h3>
+                    <p>Por Vencer (30 días)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONFIGURATION -->
+        <section class="config-panel fade-in">
+            <h2><i class="fas fa-cog"></i> Configuración</h2>
+            <div class="config-form">
+                <div class="form-group">
+                    <label>URL Google Apps Script</label>
+                    <input type="text" id="config-script-url" placeholder="https://script.google.com/macros/s/xxx/exec"
+                        value="">
+                </div>
+                <div class="form-group">
+                    <label>PayPal Business Email</label>
+                    <input type="email" id="config-paypal-email" placeholder="tu-email@paypal.com" value="">
+                </div>
+                <div class="form-group">
+                    <label style="visibility: hidden;">.</label>
+                    <button class="btn btn-primary" onclick="saveConfig()">
+                        <i class="fas fa-save"></i> Guardar Configuración
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUBSCRIBERS TABLE -->
+        <section class="table-container fade-in">
+            <div class="table-header">
+                <h2><i class="fas fa-list"></i> Suscriptores</h2>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Buscar por email o ID..." oninput="filterTable()">
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Email / Cloud ID</th>
+                            <th>Plan</th>
+                            <th>Mascotas</th>
+                            <th>Fecha Inicio</th>
+                            <th>Vencimiento</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subscribers-tbody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <i class="fas fa-inbox"></i>
+                <h3>No hay suscriptores</h3>
+                <p>Los suscriptores aparecerán aquí cuando paguen vía PayPal</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- ADD/EDIT SUBSCRIBER MODAL -->
+    <div class="modal-overlay" id="subscriber-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> <span id="modal-title">Nuevo Suscriptor</span></h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Email del Suscriptor *</label>
+                    <input type="email" id="sub-email" placeholder="usuario@email.com">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Cloud ID (MHM-XXXX)</label>
+                    <input type="text" id="sub-cloud-id" placeholder="MHM-ABCD (opcional)">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Plan de Suscripción *</label>
+                    <select id="sub-plan">
+                        <option value="free">🆓 Gratis - 1 mascota ($0)</option>
+                        <option value="basic">🐕 Básico - 3 mascotas ($24/año)</option>
+                        <option value="pro">🐕‍🦺 Pro - 5 mascotas ($36/año)</option>
+                        <option value="premium">🏆 Premium - 10 mascotas ($48/año)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>PayPal Transaction ID</label>
+                    <input type="text" id="sub-txn-id" placeholder="ID de transacción PayPal">
+                </div>
+                <div class="form-group">
+                    <label>Notas</label>
+                    <input type="text" id="sub-notes" placeholder="Notas adicionales...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button class="btn btn-success" onclick="saveSubscriber()">
+                    <i class="fas fa-check"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle" id="toast-icon"></i>
+        <span id="toast-message">Operación exitosa</span>
+    </div>
+
+    <script>
+        // =============================================
+        // STORAGE & DATA MANAGEMENT
+        // =============================================
+        const STORAGE_KEY = 'mhm_pets_admin_data';
+        const CONFIG_KEY = 'mhm_pets_admin_config';
+
+        // Plan definitions
+        const PLANS = {
+            free: { name: 'Gratis', maxPets: 1, price: 0, color: 'plan-free' },
+            basic: { name: 'Básico', maxPets: 3, price: 24, color: 'plan-basic' },
+            pro: { name: 'Pro', maxPets: 5, price: 36, color: 'plan-pro' },
+            premium: { name: 'Premium', maxPets: 10, price: 48, color: 'plan-premium' }
+        };
+
+        let subscribers = [];
+        let editingId = null;
+
+        // =============================================
+        // INITIALIZATION
+        // =============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            loadSubscribers();
+            renderTable();
+            updateStats();
+        });
+
+        // =============================================
+        // CONFIG FUNCTIONS
+        // =============================================
+        function loadConfig() {
+            try {
+                const config = JSON.parse(localStorage.getItem(CONFIG_KEY)) || {};
+                document.getElementById('config-script-url').value = config.scriptUrl || '';
+                document.getElementById('config-paypal-email').value = config.paypalEmail || '';
+            } catch (e) {
+                console.error('Error loading config:', e);
+            }
+        }
+
+        function saveConfig() {
+            const config = {
+                scriptUrl: document.getElementById('config-script-url').value.trim(),
+                paypalEmail: document.getElementById('config-paypal-email').value.trim()
+            };
+            localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+            showToast('Configuración guardada', 'success');
+        }
+
+        function getConfig() {
+            try {
+                return JSON.parse(localStorage.getItem(CONFIG_KEY)) || {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        // =============================================
+        // SUBSCRIBER FUNCTIONS
+        // =============================================
+        function loadSubscribers() {
+            try {
+                subscribers = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            } catch (e) {
+                subscribers = [];
+            }
+        }
+
+        function saveSubscribers() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(subscribers));
+        }
+
+        function showAddSubscriberModal() {
+            editingId = null;
+            document.getElementById('modal-title').textContent = 'Nuevo Suscriptor';
+            document.getElementById('sub-email').value = '';
+            document.getElementById('sub-cloud-id').value = '';
+            document.getElementById('sub-plan').value = 'basic';
+            document.getElementById('sub-txn-id').value = '';
+            document.getElementById('sub-notes').value = '';
+            document.getElementById('subscriber-modal').classList.add('active');
+        }
+
+        function editSubscriber(id) {
+            const sub = subscribers.find(s => s.id === id);
+            if (!sub) return;
+
+            editingId = id;
+            document.getElementById('modal-title').textContent = 'Editar Suscriptor';
+            document.getElementById('sub-email').value = sub.email || '';
+            document.getElementById('sub-cloud-id').value = sub.cloudId || '';
+            document.getElementById('sub-plan').value = sub.plan || 'basic';
+            document.getElementById('sub-txn-id').value = sub.txnId || '';
+            document.getElementById('sub-notes').value = sub.notes || '';
+            document.getElementById('subscriber-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('subscriber-modal').classList.remove('active');
+            editingId = null;
+        }
+
+        function saveSubscriber() {
+            const email = document.getElementById('sub-email').value.trim();
+            const cloudId = document.getElementById('sub-cloud-id').value.trim().toUpperCase();
+            const plan = document.getElementById('sub-plan').value;
+            const txnId = document.getElementById('sub-txn-id').value.trim();
+            const notes = document.getElementById('sub-notes').value.trim();
+
+            if (!email) {
+                showToast('El email es requerido', 'error');
+                return;
+            }
+
+            const now = new Date();
+            const expiresAt = new Date(now);
+            expiresAt.setFullYear(expiresAt.getFullYear() + 1); // 1 year subscription
+
+            if (editingId) {
+                // Update existing
+                const idx = subscribers.findIndex(s => s.id === editingId);
+                if (idx !== -1) {
+                    subscribers[idx] = {
+                        ...subscribers[idx],
+                        email,
+                        cloudId: cloudId || subscribers[idx].cloudId,
+                        plan,
+                        txnId,
+                        notes,
+                        updatedAt: now.toISOString()
+                    };
+                }
+            } else {
+                // Create new
+                const newSub = {
+                    id: 'sub_' + Date.now(),
+                    email,
+                    cloudId: cloudId || 'MHM-' + Math.random().toString(36).substr(2, 4).toUpperCase(),
+                    plan,
+                    txnId,
+                    notes,
+                    status: 'active',
+                    createdAt: now.toISOString(),
+                    expiresAt: expiresAt.toISOString()
+                };
+                subscribers.push(newSub);
+            }
+
+            saveSubscribers();
+            renderTable();
+            updateStats();
+            closeModal();
+            syncToCloud(editingId ? 'update' : 'create');
+            showToast(editingId ? 'Suscriptor actualizado' : 'Suscriptor agregado', 'success');
+        }
+
+        function deleteSubscriber(id) {
+            if (!confirm('¿Eliminar este suscriptor? Esta acción no se puede deshacer.')) return;
+
+            subscribers = subscribers.filter(s => s.id !== id);
+            saveSubscribers();
+            renderTable();
+            updateStats();
+            syncToCloud('delete');
+            showToast('Suscriptor eliminado', 'success');
+        }
+
+        function toggleStatus(id) {
+            const sub = subscribers.find(s => s.id === id);
+            if (!sub) return;
+
+            sub.status = sub.status === 'active' ? 'suspended' : 'active';
+            sub.updatedAt = new Date().toISOString();
+            saveSubscribers();
+            renderTable();
+            syncToCloud('update');
+            showToast(`Suscriptor ${sub.status === 'active' ? 'activado' : 'suspendido'}`, 'success');
+        }
+
+        function renewSubscription(id) {
+            const sub = subscribers.find(s => s.id === id);
+            if (!sub) return;
+
+            const now = new Date();
+            const currentExpiry = new Date(sub.expiresAt);
+            const newExpiry = currentExpiry > now ? currentExpiry : now;
+            newExpiry.setFullYear(newExpiry.getFullYear() + 1);
+
+            sub.expiresAt = newExpiry.toISOString();
+            sub.status = 'active';
+            sub.updatedAt = now.toISOString();
+
+            saveSubscribers();
+            renderTable();
+            updateStats();
+            syncToCloud('update');
+            showToast('Suscripción renovada por 1 año', 'success');
+        }
+
+        // =============================================
+        // RENDER FUNCTIONS
+        // =============================================
+        function renderTable() {
+            const tbody = document.getElementById('subscribers-tbody');
+            const emptyState = document.getElementById('empty-state');
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+
+            const filtered = subscribers.filter(s =>
+                s.email.toLowerCase().includes(searchTerm) ||
+                (s.cloudId && s.cloudId.toLowerCase().includes(searchTerm))
+            );
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            tbody.innerHTML = filtered.map(sub => {
+                const plan = PLANS[sub.plan] || PLANS.free;
+                const expiresAt = new Date(sub.expiresAt);
+                const now = new Date();
+                const daysUntilExpiry = Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24));
+
+                let statusBadge = '';
+                if (sub.status === 'suspended') {
+                    statusBadge = '<span class="badge badge-danger">Suspendido</span>';
+                } else if (daysUntilExpiry < 0) {
+                    statusBadge = '<span class="badge badge-danger">Vencido</span>';
+                } else if (daysUntilExpiry <= 30) {
+                    statusBadge = '<span class="badge badge-warning">Por vencer</span>';
+                } else {
+                    statusBadge = '<span class="badge badge-success">Activo</span>';
+                }
+
+                return `
+                    <tr>
+                        <td>
+                            <div><strong>${sub.email}</strong></div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">
+                                <i class="fas fa-cloud"></i> ${sub.cloudId || '-'}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="plan-badge ${plan.color}">
+                                ${plan.name}
+                            </span>
+                        </td>
+                        <td>
+                            <i class="fas fa-paw" style="color: var(--accent);"></i> ${plan.maxPets}
+                        </td>
+                        <td>${formatDate(sub.createdAt)}</td>
+                        <td>
+                            ${formatDate(sub.expiresAt)}
+                            ${daysUntilExpiry > 0 && daysUntilExpiry <= 30 ?
+                        `<div style="font-size: 0.7rem; color: var(--warning);">${daysUntilExpiry} días</div>` : ''}
+                        </td>
+                        <td>${statusBadge}</td>
+                        <td class="actions-cell">
+                            <button class="btn btn-secondary btn-small" onclick="editSubscriber('${sub.id}')" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-secondary btn-small" onclick="renewSubscription('${sub.id}')" title="Renovar">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                            <button class="btn btn-secondary btn-small" onclick="toggleStatus('${sub.id}')" title="${sub.status === 'active' ? 'Suspender' : 'Activar'}">
+                                <i class="fas fa-${sub.status === 'active' ? 'pause' : 'play'}"></i>
+                            </button>
+                            <button class="btn btn-danger btn-small" onclick="deleteSubscriber('${sub.id}')" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterTable() {
+            renderTable();
+        }
+
+        function updateStats() {
+            const now = new Date();
+            const total = subscribers.length;
+            const premium = subscribers.filter(s => s.plan === 'premium').length;
+            const expiring = subscribers.filter(s => {
+                const exp = new Date(s.expiresAt);
+                const days = Math.ceil((exp - now) / (1000 * 60 * 60 * 24));
+                return days > 0 && days <= 30;
+            }).length;
+
+            let revenue = 0;
+            subscribers.forEach(s => {
+                const plan = PLANS[s.plan];
+                if (plan) revenue += plan.price;
+            });
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-premium').textContent = premium;
+            document.getElementById('stat-revenue').textContent = '$' + revenue;
+            document.getElementById('stat-expiring').textContent = expiring;
+        }
+
+        // =============================================
+        // CLOUD SYNC
+        // =============================================
+        async function syncToCloud(action) {
+            const config = getConfig();
+            if (!config.scriptUrl) {
+                console.log('No script URL configured, skipping cloud sync');
+                return;
+            }
+
+            try {
+                // Sync all subscribers one by one using GET to avoid CORS
+                for (const sub of subscribers) {
+                    const params = new URLSearchParams({
+                        action: 'registerSubscription',
+                        email: sub.email || '',
+                        cloudId: sub.cloudId || '',
+                        plan: sub.plan || 'free',
+                        txnId: sub.txnId || '',
+                        status: sub.status || 'active'
+                    });
+
+                    await fetch(`${config.scriptUrl}?${params.toString()}`);
+                }
+                console.log('✅ Synced to cloud');
+                showToast('Sincronizado con la nube', 'success');
+            } catch (e) {
+                console.error('Cloud sync failed:', e);
+                showToast('Error al sincronizar', 'error');
+            }
+        }
+
+        async function refreshData() {
+            const config = getConfig();
+            if (!config.scriptUrl) {
+                showToast('Configura la URL del script primero', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(config.scriptUrl + '?action=getSubscribers');
+                const data = await response.json();
+
+                if (data && data.subscribers) {
+                    subscribers = data.subscribers;
+                    saveSubscribers();
+                    renderTable();
+                    updateStats();
+                    showToast('Datos actualizados desde la nube', 'success');
+                }
+            } catch (e) {
+                console.error('Refresh failed:', e);
+                showToast('Error al actualizar datos', 'error');
+            }
+        }
+
+        // =============================================
+        // UTILITIES
+        // =============================================
+        function formatDate(isoString) {
+            if (!isoString) return '-';
+            const date = new Date(isoString);
+            return date.toLocaleDateString('es-CO', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const msg = document.getElementById('toast-message');
+
+            toast.className = 'toast ' + type;
+            msg.textContent = message;
+
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+            } else if (type === 'error') {
+                icon.className = 'fas fa-times-circle';
+            } else {
+                icon.className = 'fas fa-exclamation-circle';
+            }
+
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // =============================================
+        // EXPORT FUNCTIONS
+        // =============================================
+        function exportCSV() {
+            let csv = 'Email,Cloud ID,Plan,Mascotas,Precio,Inicio,Vencimiento,Estado\n';
+            subscribers.forEach(s => {
+                const plan = PLANS[s.plan] || PLANS.free;
+                csv += `${s.email},${s.cloudId},${plan.name},${plan.maxPets},$${plan.price},${s.createdAt},${s.expiresAt},${s.status}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'mhm_pets_subscribers.csv';
+            a.click();
+        }
+    </script>
+</body>
+
+</html>
