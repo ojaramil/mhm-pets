@@ -70,7 +70,13 @@
             box-sizing: border-box;
         }
 
-        /* CORRECCIÓN 1: Bloqueo de scroll lateral */
+        /* CORRECCIÓN APPILY: Bloqueo total de scroll horizontal */
+        html {
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+            width: 100% !important;
+        }
+
         body {
             font-family: var(--font-main);
             margin: 0;
@@ -78,11 +84,11 @@
             min-height: 100vh;
             color: var(--text-body);
             position: relative;
-            overflow-x: hidden;
-            /* ✅ Previene scroll horizontal */
-            width: 100%;
-            max-width: 100vw;
-            /* ✅ Nunca más ancho que viewport */
+            overflow-x: hidden !important;
+            width: 100% !important;
+            max-width: 100vw !important;
+            /* Contención para evitar desbordamiento en iframes */
+            contain: layout style paint;
         }
 
         /* CORRECCIÓN 3: Fondo Fijo Independiente */
@@ -126,13 +132,20 @@
             z-index: 0;
         }
 
-        /* --- Layout Container --- */
+        /* --- Layout Container (Optimizado para iframes/Appily) --- */
         .mhm-container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 15px;
             position: relative;
             z-index: 1;
+            width: calc(100% - 30px);
+            overflow-x: hidden;
+        }
+
+        /* Prevenir desbordamiento en elementos hijos */
+        .mhm-container>* {
+            max-width: 100%;
         }
 
 
@@ -1031,16 +1044,121 @@
 
         @media (max-width: 480px) {
             .mhm-container {
-                padding: 10px;
+                padding: 8px;
+                width: calc(100% - 16px);
             }
 
             .mhm-content-panel {
-                padding: 15px;
+                padding: 12px;
+                border-radius: 0 0 8px 8px;
             }
 
             .mhm-tab {
-                min-width: 70px;
+                min-width: 65px;
                 font-size: 0.65rem;
+                padding: 6px 8px;
+            }
+
+            /* Header buttons más compactos en móvil */
+            .mhm-header-buttons {
+                gap: 4px;
+            }
+
+            .mhm-btn {
+                min-width: 60px;
+                padding: 6px 8px;
+                font-size: 0.65rem;
+            }
+
+            /* Formularios más compactos */
+            .mhm-form-row {
+                gap: 8px;
+            }
+
+            .mhm-input {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* =============================================
+   APPILY / IFRAME OPTIMIZACIONES
+   ============================================= */
+        @media (max-width: 420px) {
+
+            /* Super compacto para Appily */
+            html,
+            body {
+                overflow-x: hidden !important;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .mhm-container {
+                padding: 5px;
+                width: calc(100% - 10px);
+                margin: 0 5px;
+            }
+
+            /* Logo más pequeño */
+            .mhm-logo-title {
+                font-size: 1.6rem;
+                letter-spacing: -2px;
+            }
+
+            .mhm-logo-paw {
+                font-size: 2.5rem;
+            }
+
+            .mhm-logo-icon {
+                width: 50px;
+                height: 50px;
+            }
+
+            /* Tabs muy compactas */
+            .mhm-nav-tabs {
+                gap: 2px;
+            }
+
+            .mhm-tab {
+                min-width: 55px;
+                font-size: 0.6rem;
+                padding: 5px 6px;
+            }
+
+            /* Info strip compacto */
+            .mhm-info-strip {
+                padding: 8px 12px;
+                gap: 8px;
+            }
+
+            /* Contenido */
+            .mhm-content-panel {
+                padding: 10px;
+                min-height: 400px;
+            }
+
+            /* Cards */
+            .mhm-card {
+                padding: 12px;
+                margin-bottom: 10px;
+            }
+
+            /* Sección título */
+            .mhm-section-title {
+                font-size: 0.9rem;
+            }
+
+            /* Pet selector más compacto */
+            .pet-selector-btn {
+                min-width: 140px;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+
+            /* Subscription badge compacto */
+            .subscription-badge {
+                padding: 4px 8px;
+                font-size: 0.7rem;
             }
         }
 
@@ -1907,6 +2025,373 @@
         @keyframes spin {
             to {
                 transform: rotate(360deg);
+            }
+        }
+
+        /* =============================================
+           USER PANEL - ENHANCED
+           ============================================= */
+
+        .user-panel-modal {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .user-panel-tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .user-panel-tab {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #666;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .user-panel-tab:hover {
+            background: #eeeeee;
+            color: #333;
+        }
+
+        .user-panel-tab.active {
+            background: white;
+            color: #1976d2;
+            border-bottom: 2px solid #1976d2;
+        }
+
+        .user-panel-content {
+            display: none;
+            padding: 25px;
+        }
+
+        .user-panel-content.active {
+            display: block;
+        }
+
+        /* Account Status Card */
+        .account-status-card {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #a5d6a7;
+        }
+
+        .account-status-card.premium {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+            border-color: #ffc107;
+        }
+
+        .account-status-card.free-limited {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            border-color: #e91e63;
+        }
+
+        .account-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-orange-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 112, 67, 0.4);
+        }
+
+        .account-email {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .account-plan-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin: 10px 0;
+        }
+
+        .account-plan-badge.free {
+            background: #e0e0e0;
+            color: #616161;
+        }
+
+        .account-plan-badge.basic {
+            background: #bbdefb;
+            color: #1565c0;
+        }
+
+        .account-plan-badge.pro {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .account-plan-badge.premium {
+            background: linear-gradient(135deg, #ffd54f 0%, #ffb300 100%);
+            color: #5d4037;
+        }
+
+        /* Quick Stats */
+        .account-quick-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-stat {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .quick-stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-green-dark);
+        }
+
+        .quick-stat-label {
+            font-size: 0.7rem;
+            color: #777;
+            text-transform: uppercase;
+        }
+
+        /* Subscription Info */
+        .subscription-current-box {
+            background: #f5f5f5;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .subscription-current-title {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .subscription-current-plan {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .subscription-plan-icon {
+            font-size: 2.5rem;
+        }
+
+        .subscription-plan-details h4 {
+            margin: 0 0 5px 0;
+            font-size: 1.3rem;
+            color: #333;
+        }
+
+        .subscription-plan-details p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #777;
+        }
+
+        /* Upgrade CTA */
+        .upgrade-cta-box {
+            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .upgrade-cta-box h4 {
+            margin: 0 0 8px 0;
+            font-size: 1.1rem;
+        }
+
+        .upgrade-cta-box p {
+            margin: 0 0 15px 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .upgrade-cta-btn {
+            background: white;
+            color: var(--primary-green-dark);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upgrade-cta-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Appily Free Tier Information */
+        .free-tier-notice {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 1px solid #90caf9;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .free-tier-notice h5 {
+            margin: 0 0 8px 0;
+            color: #1565c0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .free-tier-notice p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #333;
+        }
+
+        .free-tier-limits {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .free-limit-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        .free-limit-item i {
+            color: #1976d2;
+        }
+
+        /* Settings List */
+        .settings-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .settings-item:hover {
+            background: #f5f5f5;
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .settings-item-left i {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .settings-item-left i.green {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .settings-item-left i.blue {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .settings-item-left i.orange {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .settings-item-left i.red {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .settings-item-info h5 {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+        .settings-item-info p {
+            margin: 3px 0 0 0;
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        .settings-item-right i {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        /* Media Query for User Panel */
+        @media (max-width: 480px) {
+            .user-panel-modal {
+                max-width: 100%;
+            }
+
+            .user-panel-tab {
+                padding: 10px 8px;
+                font-size: 0.75rem;
+            }
+
+            .user-panel-tab i {
+                display: none;
+            }
+
+            .account-quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-stat:last-child {
+                grid-column: span 2;
             }
         }
     </style>
@@ -3083,28 +3568,65 @@
         </div>
     </div>
 
-    <!-- ==================== MODAL: ACCOUNT / LINK EMAIL ==================== -->
+    <!-- ==================== MODAL: USER PANEL (ENHANCED) ==================== -->
     <div id="account-modal" class="account-modal-overlay">
-        <div class="account-modal">
+        <div class="account-modal user-panel-modal">
             <div class="account-modal-header" id="account-modal-header">
                 <button class="account-modal-close" onclick="closeAccountModal()">&times;</button>
-                <h2 id="account-modal-title"><i class="fas fa-shield-alt"></i> <span data-i18n="secureAccount">Protege
-                        tu Cuenta</span></h2>
+                <h2 id="account-modal-title"><i class="fas fa-user-circle"></i> <span data-i18n="myAccount">Mi
+                        Cuenta</span></h2>
             </div>
-            <div class="account-modal-body" id="account-modal-body">
-                <!-- Step 1: Show Cloud ID and offer to link email -->
-                <div id="account-step-1">
-                    <div class="account-info-box">
-                        <p data-i18n="yourCloudId">Tu Cloud ID es:</p>
-                        <div class="cloud-id" id="display-cloud-id">MHM-XXXX</div>
-                        <p style="font-size: 0.85rem; color: #666;" data-i18n="cloudIdInfo">
-                            Guarda este ID para recuperar tus datos en otro dispositivo
-                        </p>
-                    </div>
 
-                    <p style="text-align: center; margin-bottom: 20px;" data-i18n="linkEmailRecommend">
-                        💡 Vincula tu email para nunca perder acceso a tus datos
-                    </p>
+            <!-- Tabs Navigation -->
+            <div class="user-panel-tabs">
+                <button class="user-panel-tab active" onclick="showUserPanelTab('account')" data-tab="account">
+                    <i class="fas fa-user"></i>
+                    <span data-i18n="tabAccount">Cuenta</span>
+                </button>
+                <button class="user-panel-tab" onclick="showUserPanelTab('subscription')" data-tab="subscription">
+                    <i class="fas fa-crown"></i>
+                    <span data-i18n="tabSubscription">Suscripción</span>
+                </button>
+                <button class="user-panel-tab" onclick="showUserPanelTab('settings')" data-tab="settings">
+                    <i class="fas fa-cog"></i>
+                    <span data-i18n="tabSettings">Ajustes</span>
+                </button>
+            </div>
+
+            <!-- Tab Content: Account -->
+            <div id="user-panel-account" class="user-panel-content active">
+                <!-- Account Status Card -->
+                <div class="account-status-card" id="user-account-status">
+                    <div class="account-avatar">
+                        <i class="fas fa-paw"></i>
+                    </div>
+                    <div class="account-email" id="user-panel-email">usuario@ejemplo.com</div>
+                    <div class="cloud-id" id="user-panel-cloud-id">MHM-XXXX</div>
+                    <div class="account-plan-badge free" id="user-panel-plan-badge">
+                        <i class="fas fa-star"></i>
+                        <span>Gratis</span>
+                    </div>
+                    <div class="account-quick-stats">
+                        <div class="quick-stat">
+                            <div class="quick-stat-value" id="user-stat-pets">1</div>
+                            <div class="quick-stat-label" data-i18n="statPets">Mascotas</div>
+                        </div>
+                        <div class="quick-stat">
+                            <div class="quick-stat-value" id="user-stat-days">∞</div>
+                            <div class="quick-stat-label" data-i18n="statDays">Días</div>
+                        </div>
+                        <div class="quick-stat">
+                            <div class="quick-stat-value" id="user-stat-syncs">0</div>
+                            <div class="quick-stat-label" data-i18n="statSyncs">Sincronizaciones</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Link Email Section (if not linked) -->
+                <div id="link-email-section">
+                    <div class="account-info-box">
+                        <p data-i18n="linkEmailRecommend">💡 Vincula tu email para nunca perder acceso a tus datos</p>
+                    </div>
 
                     <div class="account-input-group">
                         <label data-i18n="emailLabel">Correo Electrónico</label>
@@ -3113,17 +3635,28 @@
 
                     <button class="account-btn account-btn-primary" onclick="sendVerificationCode()" id="btn-send-code">
                         <i class="fas fa-paper-plane"></i>
-                        <span data-i18n="sendCode">Enviar Código de Verificación</span>
+                        <span data-i18n="sendCode">Vincular Email</span>
                     </button>
 
                     <div class="account-divider" data-i18n="or">o</div>
 
-                    <button class="account-btn account-btn-secondary" onclick="closeAccountModal()">
-                        <span data-i18n="later">Después</span>
+                    <button class="account-btn account-btn-secondary" onclick="showRecoverModal()">
+                        <i class="fas fa-key"></i>
+                        <span data-i18n="recoverAccount">Recuperar Cuenta</span>
                     </button>
                 </div>
 
-                <!-- Step 2: Enter verification code -->
+                <!-- Email Already Linked (hidden by default) -->
+                <div id="email-linked-section" style="display: none;">
+                    <div class="account-info-box success">
+                        <i class="fas fa-check-circle"
+                            style="font-size: 2rem; color: #2e7d32; margin-bottom: 10px;"></i>
+                        <h4 data-i18n="emailLinked">Email Vinculado</h4>
+                        <p id="linked-email-display">usuario@ejemplo.com</p>
+                    </div>
+                </div>
+
+                <!-- Verification Code Step -->
                 <div id="account-step-2" style="display: none;">
                     <div class="account-info-box">
                         <p><i class="fas fa-envelope"></i> <span data-i18n="codeSent">Código enviado a:</span></p>
@@ -3152,7 +3685,7 @@
                     </p>
                 </div>
 
-                <!-- Step 3: Success -->
+                <!-- Success Step -->
                 <div id="account-step-3" style="display: none;">
                     <div class="account-info-box success">
                         <i class="fas fa-check-circle"
@@ -3169,6 +3702,124 @@
                         <i class="fas fa-thumbs-up"></i>
                         <span data-i18n="gotIt">¡Entendido!</span>
                     </button>
+                </div>
+            </div>
+
+            <!-- Tab Content: Subscription -->
+            <div id="user-panel-subscription" class="user-panel-content">
+                <!-- Free Tier Notice (for Appily users) -->
+                <div class="free-tier-notice" id="appily-free-notice">
+                    <h5><i class="fas fa-mobile-alt"></i> <span data-i18n="freeAppTitle">Versión Gratuita - App
+                            Móvil</span></h5>
+                    <p data-i18n="freeAppDesc">Estás usando la versión gratuita desde móvil. Puedes disfrutar de todas
+                        las funciones básicas sin costo.</p>
+                    <div class="free-tier-limits">
+                        <div class="free-limit-item">
+                            <i class="fas fa-paw"></i>
+                            <span>1 mascota</span>
+                        </div>
+                        <div class="free-limit-item">
+                            <i class="fas fa-cloud"></i>
+                            <span>Guardado local</span>
+                        </div>
+                        <div class="free-limit-item">
+                            <i class="fas fa-sync"></i>
+                            <span>Sync limitado</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Subscription -->
+                <div class="subscription-current-box">
+                    <div class="subscription-current-title" data-i18n="currentPlan">Tu Plan Actual</div>
+                    <div class="subscription-current-plan">
+                        <div class="subscription-plan-icon" id="sub-plan-icon">🆓</div>
+                        <div class="subscription-plan-details">
+                            <h4 id="sub-plan-name">Plan Gratuito</h4>
+                            <p id="sub-plan-expires">Sin vencimiento</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upgrade CTA -->
+                <div class="upgrade-cta-box" id="upgrade-cta">
+                    <h4 data-i18n="upgradeTitle">🚀 Desbloquea Más Mascotas</h4>
+                    <p data-i18n="upgradeDesc">Accede a funciones premium y registra hasta 10 mascotas</p>
+                    <button class="upgrade-cta-btn" onclick="closeAccountModal(); showSubscriptionModal();">
+                        <i class="fas fa-crown"></i> <span data-i18n="viewPlans">Ver Planes</span>
+                    </button>
+                </div>
+
+                <!-- Web Purchase Benefits -->
+                <div style="margin-top: 20px; text-align: center; font-size: 0.85rem; color: #666;">
+                    <i class="fas fa-laptop"></i>
+                    <span data-i18n="webPurchase">Compra desde la web para descuentos exclusivos</span>
+                </div>
+            </div>
+
+            <!-- Tab Content: Settings -->
+            <div id="user-panel-settings" class="user-panel-content">
+                <ul class="settings-list">
+                    <li class="settings-item" onclick="showRecoverModal()">
+                        <div class="settings-item-left">
+                            <i class="fas fa-key blue"></i>
+                            <div class="settings-item-info">
+                                <h5 data-i18n="settingsRecover">Recuperar Cuenta</h5>
+                                <p data-i18n="settingsRecoverDesc">Restaurar datos con tu email o Cloud ID</p>
+                            </div>
+                        </div>
+                        <div class="settings-item-right"><i class="fas fa-chevron-right"></i></div>
+                    </li>
+                    <li class="settings-item" onclick="exportAllData()">
+                        <div class="settings-item-left">
+                            <i class="fas fa-download green"></i>
+                            <div class="settings-item-info">
+                                <h5 data-i18n="settingsExport">Exportar Datos</h5>
+                                <p data-i18n="settingsExportDesc">Descargar respaldo en formato JSON</p>
+                            </div>
+                        </div>
+                        <div class="settings-item-right"><i class="fas fa-chevron-right"></i></div>
+                    </li>
+                    <li class="settings-item" onclick="document.getElementById('restore-file-input').click()">
+                        <div class="settings-item-left">
+                            <i class="fas fa-upload orange"></i>
+                            <div class="settings-item-info">
+                                <h5 data-i18n="settingsImport">Importar Datos</h5>
+                                <p data-i18n="settingsImportDesc">Restaurar desde archivo de respaldo</p>
+                            </div>
+                        </div>
+                        <div class="settings-item-right"><i class="fas fa-chevron-right"></i></div>
+                    </li>
+                    <input type="file" id="restore-file-input" accept=".json" style="display: none;"
+                        onchange="handleRestoreData(event)">
+
+                    <li class="settings-item" onclick="syncWithCloud()">
+                        <div class="settings-item-left">
+                            <i class="fas fa-cloud-upload-alt blue"></i>
+                            <div class="settings-item-info">
+                                <h5 data-i18n="settingsSync">Sincronizar Ahora</h5>
+                                <p data-i18n="settingsSyncDesc">Guardar datos en la nube</p>
+                            </div>
+                        </div>
+                        <div class="settings-item-right"><i class="fas fa-chevron-right"></i></div>
+                    </li>
+
+                    <li class="settings-item" onclick="confirmDeleteAllData()">
+                        <div class="settings-item-left">
+                            <i class="fas fa-trash-alt red"></i>
+                            <div class="settings-item-info">
+                                <h5 data-i18n="settingsDelete">Borrar Todos los Datos</h5>
+                                <p data-i18n="settingsDeleteDesc">Eliminar toda la información local</p>
+                            </div>
+                        </div>
+                        <div class="settings-item-right"><i class="fas fa-chevron-right"></i></div>
+                    </li>
+                </ul>
+
+                <!-- App Info -->
+                <div style="text-align: center; padding: 20px; color: #999; font-size: 0.8rem;">
+                    <p>MHM Mascota v2.0</p>
+                    <p>© 2026 MHM Pets - Todos los derechos reservados</p>
                 </div>
             </div>
         </div>
@@ -7516,9 +8167,31 @@
 
         // Show specific step in account modal
         function showAccountStep(step) {
-            document.getElementById('account-step-1').style.display = step === 1 ? 'block' : 'none';
-            document.getElementById('account-step-2').style.display = step === 2 ? 'block' : 'none';
-            document.getElementById('account-step-3').style.display = step === 3 ? 'block' : 'none';
+            // Hide all steps
+            const linkSection = document.getElementById('link-email-section');
+            const linkedSection = document.getElementById('email-linked-section');
+            const step2 = document.getElementById('account-step-2');
+            const step3 = document.getElementById('account-step-3');
+
+            if (linkSection) linkSection.style.display = 'none';
+            if (linkedSection) linkedSection.style.display = 'none';
+            if (step2) step2.style.display = 'none';
+            if (step3) step3.style.display = 'none';
+
+            // Show the appropriate step
+            if (step === 1) {
+                // Check if email is already linked
+                const email = accountManager.getLinkedEmail();
+                if (email) {
+                    if (linkedSection) linkedSection.style.display = 'block';
+                } else {
+                    if (linkSection) linkSection.style.display = 'block';
+                }
+            } else if (step === 2 && step2) {
+                step2.style.display = 'block';
+            } else if (step === 3 && step3) {
+                step3.style.display = 'block';
+            }
 
             // Update header for success
             const header = document.getElementById('account-modal-header');
@@ -7775,6 +8448,301 @@
         window.closeAccountModal = closeAccountModal;
         window.showRecoverModal = showRecoverModal;
         window.closeRecoverModal = closeRecoverModal;
+
+        // ==========================================
+        // USER PANEL ENHANCED FUNCTIONS
+        // ==========================================
+
+        // Show User Panel Tab
+        function showUserPanelTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.user-panel-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.tab === tabName) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Update tab content
+            document.querySelectorAll('.user-panel-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            const targetContent = document.getElementById('user-panel-' + tabName);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+
+            // Update content based on tab
+            if (tabName === 'subscription') {
+                updateUserPanelSubscription();
+            } else if (tabName === 'account') {
+                updateUserPanelAccount();
+            }
+        }
+
+        // Update User Panel Account Info
+        function updateUserPanelAccount() {
+            const linkedEmail = accountManager.getLinkedEmail();
+            const cloudId = typeof cloudStorage !== 'undefined' ? cloudStorage.getCloudId() : 'N/A';
+            const currentPlan = subscriptionManager.getCurrentPlan();
+            const petCount = typeof petManager !== 'undefined' ? petManager.getPetCount() : 1;
+
+            // Update Cloud ID
+            const cloudIdEl = document.getElementById('user-panel-cloud-id');
+            if (cloudIdEl) cloudIdEl.textContent = cloudId;
+
+            // Update email
+            const emailEl = document.getElementById('user-panel-email');
+            if (emailEl) {
+                emailEl.textContent = linkedEmail || (currentLanguage === 'en' ? 'Email not linked' : 'Email no vinculado');
+            }
+
+            // Update plan badge
+            const planBadge = document.getElementById('user-panel-plan-badge');
+            if (planBadge) {
+                const plan = SUBSCRIPTION_PLANS[currentPlan];
+                const planName = currentLanguage === 'en' ? plan.nameEn : plan.name;
+                planBadge.className = 'account-plan-badge ' + currentPlan;
+                planBadge.innerHTML = `<i class="fas fa-${currentPlan === 'free' ? 'star' : 'crown'}"></i> <span>${planName}</span>`;
+            }
+
+            // Update stats
+            const statPets = document.getElementById('user-stat-pets');
+            if (statPets) statPets.textContent = petCount;
+
+            const statDays = document.getElementById('user-stat-days');
+            if (statDays) {
+                const expiry = subscriptionManager.getExpiryDate();
+                if (expiry && currentPlan !== 'free') {
+                    const daysLeft = Math.ceil((new Date(expiry) - new Date()) / (1000 * 60 * 60 * 24));
+                    statDays.textContent = daysLeft > 0 ? daysLeft : '0';
+                } else {
+                    statDays.textContent = '∞';
+                }
+            }
+
+            // Update syncs count (from localStorage)
+            const syncCount = localStorage.getItem('mhm_sync_count') || '0';
+            const statSyncs = document.getElementById('user-stat-syncs');
+            if (statSyncs) statSyncs.textContent = syncCount;
+
+            // Show/hide appropriate sections
+            const linkSection = document.getElementById('link-email-section');
+            const linkedSection = document.getElementById('email-linked-section');
+
+            if (linkedEmail) {
+                if (linkSection) linkSection.style.display = 'none';
+                if (linkedSection) {
+                    linkedSection.style.display = 'block';
+                    const linkedEmailDisplay = document.getElementById('linked-email-display');
+                    if (linkedEmailDisplay) linkedEmailDisplay.textContent = linkedEmail;
+                }
+            } else {
+                if (linkSection) linkSection.style.display = 'block';
+                if (linkedSection) linkedSection.style.display = 'none';
+            }
+        }
+
+        // Update User Panel Subscription Info
+        function updateUserPanelSubscription() {
+            const currentPlan = subscriptionManager.getCurrentPlan();
+            const plan = SUBSCRIPTION_PLANS[currentPlan];
+            const planName = currentLanguage === 'en' ? plan.nameEn : plan.name;
+
+            // Update plan icon
+            const planIcon = document.getElementById('sub-plan-icon');
+            if (planIcon) {
+                const icons = { free: '🆓', basic: '🐕', pro: '🐕‍🦺', premium: '🏆' };
+                planIcon.textContent = icons[currentPlan] || '🆓';
+            }
+
+            // Update plan name
+            const planNameEl = document.getElementById('sub-plan-name');
+            if (planNameEl) {
+                planNameEl.textContent = currentLanguage === 'en' ? `${plan.nameEn} Plan` : `Plan ${plan.name}`;
+            }
+
+            // Update expiry
+            const expiresEl = document.getElementById('sub-plan-expires');
+            if (expiresEl) {
+                const expiry = subscriptionManager.getExpiryDate();
+                if (expiry && currentPlan !== 'free') {
+                    const expiryDate = new Date(expiry).toLocaleDateString(currentLanguage === 'en' ? 'en-US' : 'es-CO');
+                    expiresEl.textContent = currentLanguage === 'en' ? `Expires: ${expiryDate}` : `Vence: ${expiryDate}`;
+                } else {
+                    expiresEl.textContent = currentLanguage === 'en' ? 'No expiration' : 'Sin vencimiento';
+                }
+            }
+
+            // Show/hide upgrade CTA based on plan
+            const upgradeCta = document.getElementById('upgrade-cta');
+            if (upgradeCta) {
+                upgradeCta.style.display = currentPlan === 'premium' ? 'none' : 'block';
+            }
+
+            // Show Appily notice if on mobile/iframe
+            const appilyNotice = document.getElementById('appily-free-notice');
+            if (appilyNotice) {
+                const isAppily = isAppilyEnvironment();
+                appilyNotice.style.display = isAppily && currentPlan === 'free' ? 'block' : 'none';
+            }
+        }
+
+        // Detect if running in Appily App Builder (iframe or mobile)
+        function isAppilyEnvironment() {
+            // Check if in iframe
+            const inIframe = window.self !== window.top;
+            // Check screen width (mobile)
+            const isMobile = window.innerWidth <= 768;
+            // Check user agent for mobile
+            const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            return inIframe || isMobile || mobileUA;
+        }
+
+        // Export All Data
+        function exportAllData() {
+            try {
+                const allData = {
+                    pets: JSON.parse(localStorage.getItem('mhm_pets') || '[]'),
+                    settings: {
+                        cloudId: localStorage.getItem('mhm_cloud_id'),
+                        accountEmail: localStorage.getItem('mhm_account_email'),
+                        subscription: localStorage.getItem('mhm_subscription'),
+                        language: currentLanguage
+                    },
+                    exportDate: new Date().toISOString()
+                };
+
+                const dataStr = JSON.stringify(allData, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `mhm-backup-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                alert(currentLanguage === 'en' ? '✅ Data exported successfully' : '✅ Datos exportados correctamente');
+            } catch (e) {
+                console.error('Error exporting data:', e);
+                alert(currentLanguage === 'en' ? '❌ Error exporting data' : '❌ Error al exportar datos');
+            }
+        }
+
+        // Handle Restore Data from file
+        function handleRestoreData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+
+                    const confirmMsg = currentLanguage === 'en'
+                        ? `This will replace all your current data with the backup from ${new Date(data.exportDate).toLocaleDateString()}.\n\nContinue?`
+                        : `Esto reemplazará todos tus datos actuales con el respaldo del ${new Date(data.exportDate).toLocaleDateString()}.\n\n¿Continuar?`;
+
+                    if (confirm(confirmMsg)) {
+                        // Restore pets
+                        if (data.pets) {
+                            localStorage.setItem('mhm_pets', JSON.stringify(data.pets));
+                        }
+
+                        // Restore settings
+                        if (data.settings) {
+                            if (data.settings.cloudId) localStorage.setItem('mhm_cloud_id', data.settings.cloudId);
+                            if (data.settings.accountEmail) localStorage.setItem('mhm_account_email', data.settings.accountEmail);
+                            if (data.settings.subscription) localStorage.setItem('mhm_subscription', data.settings.subscription);
+                        }
+
+                        alert(currentLanguage === 'en' ? '✅ Data restored. The page will reload.' : '✅ Datos restaurados. La página se recargará.');
+                        location.reload();
+                    }
+                } catch (e) {
+                    console.error('Error parsing backup file:', e);
+                    alert(currentLanguage === 'en' ? '❌ Invalid backup file' : '❌ Archivo de respaldo inválido');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Reset input
+        }
+
+        // Sync with Cloud
+        async function syncWithCloud() {
+            if (typeof cloudStorage === 'undefined' || !cloudStorage.isReady()) {
+                alert(currentLanguage === 'en' ? 'Cloud storage not available' : 'Almacenamiento en la nube no disponible');
+                return;
+            }
+
+            try {
+                const btn = event.target.closest('.settings-item');
+                if (btn) btn.style.opacity = '0.6';
+
+                await cloudStorage.savePetsToCloud(petManager.getAllPets());
+
+                // Update sync count
+                let syncCount = parseInt(localStorage.getItem('mhm_sync_count') || '0');
+                syncCount++;
+                localStorage.setItem('mhm_sync_count', syncCount.toString());
+
+                alert(currentLanguage === 'en' ? '✅ Data synced to cloud' : '✅ Datos sincronizados con la nube');
+
+                if (btn) btn.style.opacity = '1';
+                updateUserPanelAccount(); // Refresh stats
+            } catch (e) {
+                console.error('Error syncing:', e);
+                alert(currentLanguage === 'en' ? '❌ Sync error' : '❌ Error de sincronización');
+            }
+        }
+
+        // Confirm Delete All Data
+        function confirmDeleteAllData() {
+            const confirmMsg = currentLanguage === 'en'
+                ? '⚠️ WARNING: This will permanently delete ALL your data including:\n\n• All pets\n• All medical records\n• Cloud settings\n\nThis action CANNOT be undone.\n\nType "DELETE" to confirm:'
+                : '⚠️ ADVERTENCIA: Esto eliminará permanentemente TODOS tus datos incluyendo:\n\n• Todas las mascotas\n• Todos los registros médicos\n• Configuraciones de la nube\n\nEsta acción NO se puede deshacer.\n\nEscribe "BORRAR" para confirmar:';
+
+            const input = prompt(confirmMsg);
+
+            if (input === 'DELETE' || input === 'BORRAR') {
+                // Clear all MHM data
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('mhm_')) {
+                        keysToRemove.push(key);
+                    }
+                }
+                keysToRemove.forEach(key => localStorage.removeItem(key));
+
+                alert(currentLanguage === 'en' ? '✅ All data deleted. The page will reload.' : '✅ Todos los datos eliminados. La página se recargará.');
+                location.reload();
+            }
+        }
+
+        // Override showAccountModal to also update user panel
+        const originalShowAccountModal = showAccountModal;
+        showAccountModal = function () {
+            originalShowAccountModal();
+
+            // Update user panel data
+            setTimeout(() => {
+                updateUserPanelAccount();
+                showUserPanelTab('account'); // Always start on account tab
+            }, 100);
+        };
+
+        // Expose new functions globally
+        window.showUserPanelTab = showUserPanelTab;
+        window.exportAllData = exportAllData;
+        window.handleRestoreData = handleRestoreData;
+        window.syncWithCloud = syncWithCloud;
+        window.confirmDeleteAllData = confirmDeleteAllData;
 
     </script>
 
