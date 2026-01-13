@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MHM - Mi Historia Médica | Tu salud, siempre contigo</title>
+    <title>MHM - My Medical History | Your health, always with you</title>
     <meta name="description"
-        content="MHM te permite llevar el historial médico de tus mascotas y el tuyo propio de forma segura, accesible y siempre disponible.">
+        content="MHM lets you keep track of your pets' and your own medical history in a secure, accessible, and always available way.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
@@ -117,6 +117,24 @@
             background: var(--accent-orange-dark);
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(232, 118, 84, 0.4);
+        }
+
+        .lang-switch {
+            display: flex;
+            gap: 5px;
+            margin-left: 1rem;
+        }
+
+        .lang-switch a {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .lang-switch a.active {
+            background: rgba(255, 255, 255, 0.2);
+            opacity: 1;
         }
 
         /* Hero Section */
@@ -680,15 +698,13 @@
             <span class="logo-text">MHM</span>
         </a>
         <div class="nav-links">
-            <a href="#apps">Nuestras Apps</a>
-            <a href="#features">Características</a>
-            <a href="#contact">Contacto</a>
-            <a href="https://pet.getmhm.com" class="nav-btn">Ir a MHM Pets</a>
-            <div class="lang-switch" style="display: flex; gap: 5px; margin-left: 1rem;">
-                <a href="landing.html"
-                    style="padding: 5px 10px; border-radius: 5px; font-size: 0.85rem; background: rgba(255,255,255,0.2);">ES</a>
-                <a href="landing-en.html"
-                    style="padding: 5px 10px; border-radius: 5px; font-size: 0.85rem; opacity: 0.7;">EN</a>
+            <a href="#apps">Our Apps</a>
+            <a href="#features">Features</a>
+            <a href="#contact">Contact</a>
+            <a href="https://pet.getmhm.com" class="nav-btn">Go to MHM Pets</a>
+            <div class="lang-switch">
+                <a href="landing.html">ES</a>
+                <a href="landing-en.html" class="active">EN</a>
             </div>
         </div>
         <button class="mobile-menu-btn">
@@ -700,17 +716,17 @@
     <section class="hero">
         <div class="hero-content">
             <div class="hero-text">
-                <h1>Tu Salud y la de tus Mascotas, <span>Siempre Contigo</span></h1>
-                <p>MHM te permite llevar el historial médico de forma segura, accesible y siempre disponible. Sin
-                    contraseñas complicadas, siempre sincronizado.</p>
+                <h1>Your Health & Your Pets' Health, <span>Always With You</span></h1>
+                <p>MHM lets you keep your medical history secure, accessible, and always available. No complicated
+                    passwords, always synced.</p>
                 <div class="hero-btns">
                     <a href="https://pet.getmhm.com" class="btn btn-primary">
                         <i class="fas fa-paw"></i>
-                        MHM Mascotas
+                        MHM Pets
                     </a>
                     <a href="#apps" class="btn btn-secondary">
                         <i class="fas fa-info-circle"></i>
-                        Saber Más
+                        Learn More
                     </a>
                 </div>
             </div>
@@ -720,7 +736,7 @@
                     <div class="hero-logo">
                         <i class="fas fa-paw paw-icon"></i>
                         <div class="hero-logo-text">MHM</div>
-                        <div class="hero-logo-subtitle">Mi Historia Médica</div>
+                        <div class="hero-logo-subtitle">My Medical History</div>
                     </div>
                 </div>
             </div>
@@ -730,33 +746,32 @@
     <!-- Apps Section -->
     <section class="apps-section" id="apps">
         <div class="section-header fade-in">
-            <h2>Nuestras Aplicaciones</h2>
-            <p>Elige la app que necesitas para llevar el control de la salud</p>
+            <h2>Our Applications</h2>
+            <p>Choose the app you need to take control of health</p>
         </div>
         <div class="apps-grid">
             <div class="app-card fade-in">
                 <div class="app-icon">
                     <i class="fas fa-paw"></i>
                 </div>
-                <h3>MHM Mascotas</h3>
-                <p>Lleva el historial médico completo de tus mascotas. Vacunas, alergias, medicamentos, veterinarios y
-                    más.</p>
+                <h3>MHM Pets</h3>
+                <p>Keep your pets' complete medical history. Vaccines, allergies, medications, vets, and more.</p>
                 <a href="https://pet.getmhm.com" class="btn btn-primary">
                     <i class="fas fa-arrow-right"></i>
-                    Ir a la App
+                    Go to App
                 </a>
             </div>
             <div class="app-card coming-soon fade-in">
-                <span class="coming-soon-badge">Próximamente</span>
+                <span class="coming-soon-badge">Coming Soon</span>
                 <div class="app-icon">
                     <i class="fas fa-user-md"></i>
                 </div>
                 <h3>MHM Personal</h3>
-                <p>Tu historial médico personal. Antecedentes, medicamentos, exámenes y citas médicas en un solo lugar.
-                </p>
+                <p>Your personal medical history. Medical records, medications, lab results, and appointments in one
+                    place.</p>
                 <button class="btn btn-secondary" disabled>
                     <i class="fas fa-clock"></i>
-                    En Desarrollo
+                    In Development
                 </button>
             </div>
         </div>
@@ -765,37 +780,37 @@
     <!-- Features Section -->
     <section class="features-section" id="features">
         <div class="section-header fade-in">
-            <h2>¿Por qué MHM?</h2>
-            <p>Diseñado para ser simple, seguro y siempre accesible</p>
+            <h2>Why MHM?</h2>
+            <p>Designed to be simple, secure, and always accessible</p>
         </div>
         <div class="features-grid">
             <div class="feature-card fade-in">
                 <div class="feature-icon">
                     <i class="fas fa-cloud"></i>
                 </div>
-                <h3>Siempre Sincronizado</h3>
-                <p>Tus datos están seguros en la nube y disponibles desde cualquier dispositivo.</p>
+                <h3>Always Synced</h3>
+                <p>Your data is safe in the cloud and available from any device.</p>
             </div>
             <div class="feature-card fade-in">
                 <div class="feature-icon">
                     <i class="fas fa-lock"></i>
                 </div>
-                <h3>Sin Contraseñas</h3>
-                <p>Usa tu Cloud ID único o vincula tu email. Sin complicaciones.</p>
+                <h3>No Passwords</h3>
+                <p>Use your unique Cloud ID or link your email. No complications.</p>
             </div>
             <div class="feature-card fade-in">
                 <div class="feature-icon">
                     <i class="fas fa-share-alt"></i>
                 </div>
-                <h3>Comparte Fácilmente</h3>
-                <p>Comparte el historial con tu veterinario o médico con un simple link.</p>
+                <h3>Easy Sharing</h3>
+                <p>Share the history with your vet or doctor with a simple link.</p>
             </div>
             <div class="feature-card fade-in">
                 <div class="feature-icon">
                     <i class="fas fa-mobile-alt"></i>
                 </div>
-                <h3>100% Móvil</h3>
-                <p>Funciona perfectamente en tu celular, tablet o computadora.</p>
+                <h3>100% Mobile</h3>
+                <p>Works perfectly on your phone, tablet, or computer.</p>
             </div>
         </div>
     </section>
@@ -803,11 +818,11 @@
     <!-- CTA Section -->
     <section class="cta-section" id="contact">
         <div class="cta-content fade-in">
-            <h2>Comienza Hoy, ¡Es Gratis!</h2>
-            <p>Únete a miles de personas que ya llevan el control de su salud y la de sus mascotas con MHM.</p>
+            <h2>Start Today, It's Free!</h2>
+            <p>Join thousands of people who already manage their health and their pets' health with MHM.</p>
             <a href="https://pet.getmhm.com" class="btn btn-primary">
                 <i class="fas fa-paw"></i>
-                Empezar con MHM Mascotas
+                Start with MHM Pets
             </a>
         </div>
     </section>
@@ -820,7 +835,7 @@
                     <div class="logo-icon">🐾</div>
                     <span class="logo-text">MHM</span>
                 </a>
-                <p>Mi Historia Médica - Tu salud y la de tus mascotas, siempre contigo.</p>
+                <p>My Medical History - Your health and your pets' health, always with you.</p>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="#"><i class="fab fa-instagram"></i></a>
@@ -828,30 +843,30 @@
                 </div>
             </div>
             <div class="footer-links">
-                <h4>Aplicaciones</h4>
+                <h4>Applications</h4>
                 <ul>
-                    <li><a href="https://pet.getmhm.com">MHM Mascotas</a></li>
-                    <li><a href="#">MHM Personal (Próximamente)</a></li>
+                    <li><a href="https://pet.getmhm.com">MHM Pets</a></li>
+                    <li><a href="#">MHM Personal (Coming Soon)</a></li>
                 </ul>
             </div>
             <div class="footer-links">
-                <h4>Recursos</h4>
+                <h4>Resources</h4>
                 <ul>
-                    <li><a href="#">Ayuda & FAQ</a></li>
-                    <li><a href="#">Contacto</a></li>
+                    <li><a href="#">Help & FAQ</a></li>
+                    <li><a href="#">Contact</a></li>
                     <li><a href="#">Blog</a></li>
                 </ul>
             </div>
             <div class="footer-links">
                 <h4>Legal</h4>
                 <ul>
-                    <li><a href="#">Términos de Servicio</a></li>
-                    <li><a href="#">Política de Privacidad</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 MHM - Mi Historia Médica. Todos los derechos reservados.</p>
+            <p>&copy; 2026 MHM - My Medical History. All rights reserved.</p>
         </div>
     </footer>
 
