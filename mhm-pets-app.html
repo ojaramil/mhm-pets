@@ -9566,22 +9566,79 @@
                 return;
             }
 
-            // Set the Cloud ID and reload data
-            if (typeof cloudStorage !== 'undefined') {
-                localStorage.setItem('mhm_cloud_id', cloudId);
+            // Confirm before proceeding
+            const confirmed = confirm(
+                currentLanguage === 'en'
+                    ? `Restore data for account ${cloudId}?\n\nThis will replace your current local data with data from the cloud.`
+                    : `¿Restaurar datos de la cuenta ${cloudId}?\n\nEsto reemplazará tus datos locales actuales con los datos de la nube.`
+            );
 
-                // Confirm and reload
-                const confirmed = confirm(
+            if (!confirmed) return;
+
+            // Show loading state
+            const btn = document.querySelector('[onclick="restoreWithCloudId()"]');
+            if (btn) {
+                btn.innerHTML = '<div class="spinner"></div> Restaurando...';
+                btn.disabled = true;
+            }
+
+            try {
+                // 1. Clear all local pet data from localStorage
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && (key.includes('mhm-mascota') || key.includes('mhm_') || key.includes('mhm-pets'))) {
+                        keysToRemove.push(key);
+                    }
+                }
+                keysToRemove.forEach(key => {
+                    if (key !== 'mhm_cloud_id') { // Keep the new cloud ID we're about to set
+                        localStorage.removeItem(key);
+                    }
+                });
+                console.log('🗑️ Cleared localStorage keys:', keysToRemove);
+
+                // 2. Clear IndexedDB data if hybridStorage is available
+                if (typeof hybridStorage !== 'undefined') {
+                    try {
+                        await hybridStorage.removeItem('mhm-mascota-multi-pets-data');
+                        await hybridStorage.removeItem('mhm-mascota-multi-current-pet-id');
+                        console.log('🗑️ Cleared IndexedDB data');
+                    } catch (e) {
+                        console.warn('Could not clear IndexedDB:', e);
+                    }
+                }
+
+                // 3. Set the new Cloud ID
+                localStorage.setItem('mhm_cloud_id', cloudId);
+                console.log('☁️ Set new Cloud ID:', cloudId);
+
+                // 4. Brief delay to ensure storage is cleared
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                // 5. Show success message and reload
+                alert(
                     currentLanguage === 'en'
-                        ? `Restore data for account ${cloudId}?\n\nThis will replace your current data.`
-                        : `¿Restaurar datos de la cuenta ${cloudId}?\n\nEsto reemplazará tus datos actuales.`
+                        ? `✅ Account ${cloudId} ready to restore!\n\nThe page will reload to fetch your data from the cloud.`
+                        : `✅ ¡Cuenta ${cloudId} lista para restaurar!\n\nLa página se recargará para obtener tus datos de la nube.`
                 );
 
-                if (confirmed) {
-                    location.reload();
+                // 6. Reload the page to trigger cloud data load
+                location.reload();
+
+            } catch (error) {
+                console.error('Error during restore:', error);
+                alert(
+                    currentLanguage === 'en'
+                        ? 'Error during restore. Please try again.'
+                        : 'Error durante la restauración. Por favor intenta de nuevo.'
+                );
+
+                // Restore button state
+                if (btn) {
+                    btn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> <span data-i18n="restoreData">Restaurar Datos</span>';
+                    btn.disabled = false;
                 }
-            } else {
-                alert(currentLanguage === 'en' ? 'Cloud storage not available' : 'Almacenamiento en la nube no disponible');
             }
         }
 
