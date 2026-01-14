@@ -1447,38 +1447,19 @@
 
             /* Cloud ID display - visible en móvil */
             #cloud-id-display {
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                gap: 10px !important;
-                padding: 12px !important;
-                margin-top: 12px !important;
-                border-radius: 12px !important;
-                background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
-                border: 2px solid #1976d2 !important;
+                padding: 10px !important;
+                margin-top: 10px !important;
             }
 
-            #cloud-id-display span {
+            #cloud-id-display>div {
                 flex-direction: column !important;
-                display: flex !important;
-                align-items: center !important;
                 gap: 8px !important;
-                width: 100% !important;
-            }
-
-            #cloud-id-display code {
-                font-size: 1.1rem !important;
-                padding: 8px 16px !important;
-                display: block !important;
             }
 
             #cloud-id-display button {
                 width: 100% !important;
-                padding: 12px 20px !important;
-                font-size: 1rem !important;
-                border-radius: 8px !important;
-                font-weight: 600 !important;
-                box-shadow: 0 2px 8px rgba(21, 101, 192, 0.3) !important;
+                padding: 10px 15px !important;
+                margin-top: 5px !important;
             }
         }
 
@@ -4015,23 +3996,28 @@
         <div class="account-modal user-panel-modal">
             <div class="account-modal-header" id="account-modal-header">
                 <button class="account-modal-close" onclick="closeAccountModal()">&times;</button>
-                <h2 id="account-modal-title"><i class="fas fa-user-circle"></i> <span data-i18n="myAccount">Mi
-                        Cuenta</span></h2>
+                <h2 id="account-modal-title"><i class="fas fa-user-circle"></i>
+                    <span class="lang-es">Mi Cuenta</span>
+                    <span class="lang-en" style="display:none;">My Account</span>
+                </h2>
             </div>
 
             <!-- Tabs Navigation -->
             <div class="user-panel-tabs">
                 <button class="user-panel-tab active" onclick="showUserPanelTab('account')" data-tab="account">
                     <i class="fas fa-user"></i>
-                    <span data-i18n="tabAccount">Cuenta</span>
+                    <span class="lang-es">Cuenta</span>
+                    <span class="lang-en" style="display:none;">Account</span>
                 </button>
                 <button class="user-panel-tab" onclick="showUserPanelTab('subscription')" data-tab="subscription">
                     <i class="fas fa-crown"></i>
-                    <span data-i18n="tabSubscription">Suscripción</span>
+                    <span class="lang-es">Suscripción</span>
+                    <span class="lang-en" style="display:none;">Subscription</span>
                 </button>
                 <button class="user-panel-tab" onclick="showUserPanelTab('settings')" data-tab="settings">
                     <i class="fas fa-cog"></i>
-                    <span data-i18n="tabSettings">Ajustes</span>
+                    <span class="lang-es">Ajustes</span>
+                    <span class="lang-en" style="display:none;">Settings</span>
                 </button>
             </div>
 
@@ -4046,20 +4032,30 @@
                     <div class="cloud-id" id="user-panel-cloud-id">MHM-XXXX</div>
                     <div class="account-plan-badge free" id="user-panel-plan-badge">
                         <i class="fas fa-star"></i>
-                        <span>Gratis</span>
+                        <span class="lang-es">Gratis</span>
+                        <span class="lang-en" style="display:none;">Free</span>
                     </div>
                     <div class="account-quick-stats">
                         <div class="quick-stat">
                             <div class="quick-stat-value" id="user-stat-pets">1</div>
-                            <div class="quick-stat-label" data-i18n="statPets">Mascotas</div>
+                            <div class="quick-stat-label">
+                                <span class="lang-es">Mascotas</span>
+                                <span class="lang-en" style="display:none;">Pets</span>
+                            </div>
                         </div>
                         <div class="quick-stat">
                             <div class="quick-stat-value" id="user-stat-days">∞</div>
-                            <div class="quick-stat-label" data-i18n="statDays">Días</div>
+                            <div class="quick-stat-label">
+                                <span class="lang-es">Días</span>
+                                <span class="lang-en" style="display:none;">Days</span>
+                            </div>
                         </div>
                         <div class="quick-stat">
                             <div class="quick-stat-value" id="user-stat-syncs">0</div>
-                            <div class="quick-stat-label" data-i18n="statSyncs">Sincronizaciones</div>
+                            <div class="quick-stat-label">
+                                <span class="lang-es">Sincronizaciones</span>
+                                <span class="lang-en" style="display:none;">Syncs</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -4067,24 +4063,36 @@
                 <!-- Link Email Section (if not linked) -->
                 <div id="link-email-section">
                     <div class="account-info-box">
-                        <p data-i18n="linkEmailRecommend">💡 Vincula tu email para nunca perder acceso a tus datos</p>
+                        <p>
+                            <span class="lang-es">💡 Vincula tu email para nunca perder acceso a tus datos</span>
+                            <span class="lang-en" style="display:none;">💡 Link your email to never lose access to your
+                                data</span>
+                        </p>
                     </div>
 
                     <div class="account-input-group">
-                        <label data-i18n="emailLabel">Correo Electrónico</label>
+                        <label>
+                            <span class="lang-es">Correo Electrónico</span>
+                            <span class="lang-en" style="display:none;">Email Address</span>
+                        </label>
                         <input type="email" id="link-email-input" placeholder="tu@email.com">
                     </div>
 
                     <button class="account-btn account-btn-primary" onclick="sendVerificationCode()" id="btn-send-code">
                         <i class="fas fa-paper-plane"></i>
-                        <span data-i18n="sendCode">Vincular Email</span>
+                        <span class="lang-es">Vincular Email</span>
+                        <span class="lang-en" style="display:none;">Link Email</span>
                     </button>
 
-                    <div class="account-divider" data-i18n="or">o</div>
+                    <div class="account-divider">
+                        <span class="lang-es">o</span>
+                        <span class="lang-en" style="display:none;">or</span>
+                    </div>
 
                     <button class="account-btn account-btn-secondary" onclick="showRecoverModal()">
                         <i class="fas fa-key"></i>
-                        <span data-i18n="recoverAccount">Recuperar Cuenta</span>
+                        <span class="lang-es">Recuperar Cuenta</span>
+                        <span class="lang-en" style="display:none;">Recover Account</span>
                     </button>
                 </div>
 
@@ -4093,7 +4101,10 @@
                     <div class="account-info-box success">
                         <i class="fas fa-check-circle"
                             style="font-size: 2rem; color: #2e7d32; margin-bottom: 10px;"></i>
-                        <h4 data-i18n="emailLinked">Email Vinculado</h4>
+                        <h4>
+                            <span class="lang-es">Email Vinculado</span>
+                            <span class="lang-en" style="display:none;">Email Linked</span>
+                        </h4>
                         <p id="linked-email-display">usuario@ejemplo.com</p>
                     </div>
                 </div>
@@ -4101,29 +4112,41 @@
                 <!-- Verification Code Step -->
                 <div id="account-step-2" style="display: none;">
                     <div class="account-info-box">
-                        <p><i class="fas fa-envelope"></i> <span data-i18n="codeSent">Código enviado a:</span></p>
+                        <p><i class="fas fa-envelope"></i>
+                            <span class="lang-es">Código enviado a:</span>
+                            <span class="lang-en" style="display:none;">Code sent to:</span>
+                        </p>
                         <strong id="display-sent-email">tu@email.com</strong>
                     </div>
 
                     <div class="account-input-group">
-                        <label data-i18n="enterCode">Ingresa el código de 6 dígitos</label>
+                        <label>
+                            <span class="lang-es">Ingresa el código de 6 dígitos</span>
+                            <span class="lang-en" style="display:none;">Enter the 6-digit code</span>
+                        </label>
                         <input type="text" id="verification-code-input" class="code-input" maxlength="6"
                             placeholder="000000">
                     </div>
 
                     <button class="account-btn account-btn-primary" onclick="verifyCode()" id="btn-verify-code">
                         <i class="fas fa-check-circle"></i>
-                        <span data-i18n="verify">Verificar</span>
+                        <span class="lang-es">Verificar</span>
+                        <span class="lang-en" style="display:none;">Verify</span>
                     </button>
 
                     <button class="account-btn account-btn-secondary" onclick="showAccountStep(1)">
                         <i class="fas fa-arrow-left"></i>
-                        <span data-i18n="back">Volver</span>
+                        <span class="lang-es">Volver</span>
+                        <span class="lang-en" style="display:none;">Back</span>
                     </button>
 
                     <p style="text-align: center; margin-top: 15px;">
-                        <span data-i18n="didntReceive">¿No recibiste el código?</span>
-                        <a href="#" class="account-link" onclick="resendCode()" data-i18n="resend">Reenviar</a>
+                        <span class="lang-es">¿No recibiste el código?</span>
+                        <span class="lang-en" style="display:none;">Didn't receive the code?</span>
+                        <a href="#" class="account-link" onclick="resendCode()">
+                            <span class="lang-es">Reenviar</span>
+                            <span class="lang-en" style="display:none;">Resend</span>
+                        </a>
                     </p>
                 </div>
 
@@ -4132,17 +4155,24 @@
                     <div class="account-info-box success">
                         <i class="fas fa-check-circle"
                             style="font-size: 3rem; color: #2e7d32; margin-bottom: 15px;"></i>
-                        <h3 data-i18n="emailLinked">¡Email Vinculado!</h3>
+                        <h3>
+                            <span class="lang-es">¡Email Vinculado!</span>
+                            <span class="lang-en" style="display:none;">Email Linked!</span>
+                        </h3>
                         <p id="display-linked-email">tu@email.com</p>
                     </div>
 
-                    <p style="text-align: center; margin-bottom: 20px;" data-i18n="nowCanRecover">
-                        Ahora puedes recuperar tu cuenta usando este email en cualquier dispositivo.
+                    <p style="text-align: center; margin-bottom: 20px;">
+                        <span class="lang-es">Ahora puedes recuperar tu cuenta usando este email en cualquier
+                            dispositivo.</span>
+                        <span class="lang-en" style="display:none;">You can now recover your account using this email on
+                            any device.</span>
                     </p>
 
                     <button class="account-btn account-btn-primary" onclick="closeAccountModal()">
                         <i class="fas fa-thumbs-up"></i>
-                        <span data-i18n="gotIt">¡Entendido!</span>
+                        <span class="lang-es">¡Entendido!</span>
+                        <span class="lang-en" style="display:none;">Got it!</span>
                     </button>
                 </div>
             </div>
@@ -4151,51 +4181,76 @@
             <div id="user-panel-subscription" class="user-panel-content">
                 <!-- Free Tier Notice (for Appily users) -->
                 <div class="free-tier-notice" id="appily-free-notice">
-                    <h5><i class="fas fa-mobile-alt"></i> <span data-i18n="freeAppTitle">Versión Gratuita - App
-                            Móvil</span></h5>
-                    <p data-i18n="freeAppDesc">Estás usando la versión gratuita desde móvil. Puedes disfrutar de todas
-                        las funciones básicas sin costo.</p>
+                    <h5><i class="fas fa-mobile-alt"></i>
+                        <span class="lang-es">Versión Gratuita - App Móvil</span>
+                        <span class="lang-en" style="display:none;">Free Version - Mobile App</span>
+                    </h5>
+                    <p>
+                        <span class="lang-es">Estás usando la versión gratuita desde móvil. Puedes disfrutar de todas
+                            las funciones básicas sin costo.</span>
+                        <span class="lang-en" style="display:none;">You're using the free mobile version. Enjoy all
+                            basic features at no cost.</span>
+                    </p>
                     <div class="free-tier-limits">
                         <div class="free-limit-item">
                             <i class="fas fa-paw"></i>
-                            <span>1 mascota</span>
+                            <span class="lang-es">1 mascota</span>
+                            <span class="lang-en" style="display:none;">1 pet</span>
                         </div>
                         <div class="free-limit-item">
                             <i class="fas fa-cloud"></i>
-                            <span>Guardado local</span>
+                            <span class="lang-es">Guardado local</span>
+                            <span class="lang-en" style="display:none;">Local storage</span>
                         </div>
                         <div class="free-limit-item">
                             <i class="fas fa-sync"></i>
-                            <span>Sync limitado</span>
+                            <span class="lang-es">Sync limitado</span>
+                            <span class="lang-en" style="display:none;">Limited sync</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Current Subscription -->
                 <div class="subscription-current-box">
-                    <div class="subscription-current-title" data-i18n="currentPlan">Tu Plan Actual</div>
+                    <div class="subscription-current-title">
+                        <span class="lang-es">Tu Plan Actual</span>
+                        <span class="lang-en" style="display:none;">Your Current Plan</span>
+                    </div>
                     <div class="subscription-current-plan">
                         <div class="subscription-plan-icon" id="sub-plan-icon">🆓</div>
                         <div class="subscription-plan-details">
                             <h4 id="sub-plan-name">Plan Gratuito</h4>
-                            <p id="sub-plan-expires">Sin vencimiento</p>
+                            <p id="sub-plan-expires">
+                                <span class="lang-es">Sin vencimiento</span>
+                                <span class="lang-en" style="display:none;">No expiration</span>
+                            </p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Upgrade CTA -->
                 <div class="upgrade-cta-box" id="upgrade-cta">
-                    <h4 data-i18n="upgradeTitle">🚀 Desbloquea Más Mascotas</h4>
-                    <p data-i18n="upgradeDesc">Accede a funciones premium y registra hasta 10 mascotas</p>
+                    <h4>
+                        <span class="lang-es">🚀 Desbloquea Más Mascotas</span>
+                        <span class="lang-en" style="display:none;">🚀 Unlock More Pets</span>
+                    </h4>
+                    <p>
+                        <span class="lang-es">Accede a funciones premium y registra hasta 10 mascotas</span>
+                        <span class="lang-en" style="display:none;">Access premium features and register up to 10
+                            pets</span>
+                    </p>
                     <button class="upgrade-cta-btn" onclick="closeAccountModal(); showSubscriptionModal();">
-                        <i class="fas fa-crown"></i> <span data-i18n="viewPlans">Ver Planes</span>
+                        <i class="fas fa-crown"></i>
+                        <span class="lang-es">Ver Planes</span>
+                        <span class="lang-en" style="display:none;">View Plans</span>
                     </button>
                 </div>
 
                 <!-- Web Purchase Benefits -->
                 <div style="margin-top: 20px; text-align: center; font-size: 0.85rem; color: #666;">
                     <i class="fas fa-laptop"></i>
-                    <span data-i18n="webPurchase">Compra desde la web para descuentos exclusivos</span>
+                    <span class="lang-es">Compra desde la web para descuentos exclusivos</span>
+                    <span class="lang-en" style="display:none;">Purchase from web for exclusive discounts</span>
                 </div>
             </div>
 
@@ -4206,8 +4261,15 @@
                         <div class="settings-item-left">
                             <i class="fas fa-key blue"></i>
                             <div class="settings-item-info">
-                                <h5 data-i18n="settingsRecover">Recuperar Cuenta</h5>
-                                <p data-i18n="settingsRecoverDesc">Restaurar datos con tu email o Cloud ID</p>
+                                <h5>
+                                    <span class="lang-es">Recuperar Cuenta</span>
+                                    <span class="lang-en" style="display:none;">Recover Account</span>
+                                </h5>
+                                <p>
+                                    <span class="lang-es">Restaurar datos con tu email o Cloud ID</span>
+                                    <span class="lang-en" style="display:none;">Restore data with your email or Cloud
+                                        ID</span>
+                                </p>
                             </div>
                         </div>
                         <div class="settings-item-right"><i class="fas fa-chevron-right"></i></div>
@@ -4216,8 +4278,14 @@
                         <div class="settings-item-left">
                             <i class="fas fa-download green"></i>
                             <div class="settings-item-info">
-                                <h5 data-i18n="settingsExport">Exportar Datos</h5>
-                                <p data-i18n="settingsExportDesc">Descargar respaldo en formato JSON</p>
+                                <h5>
+                                    <span class="lang-es">Exportar Datos</span>
+                                    <span class="lang-en" style="display:none;">Export Data</span>
+                                </h5>
+                                <p>
+                                    <span class="lang-es">Descargar respaldo en formato JSON</span>
+                                    <span class="lang-en" style="display:none;">Download backup in JSON format</span>
+                                </p>
                             </div>
                         </div>
                         <div class="settings-item-right"><i class="fas fa-chevron-right"></i></div>
@@ -4226,8 +4294,14 @@
                         <div class="settings-item-left">
                             <i class="fas fa-upload orange"></i>
                             <div class="settings-item-info">
-                                <h5 data-i18n="settingsImport">Importar Datos</h5>
-                                <p data-i18n="settingsImportDesc">Restaurar desde archivo de respaldo</p>
+                                <h5>
+                                    <span class="lang-es">Importar Datos</span>
+                                    <span class="lang-en" style="display:none;">Import Data</span>
+                                </h5>
+                                <p>
+                                    <span class="lang-es">Restaurar desde archivo de respaldo</span>
+                                    <span class="lang-en" style="display:none;">Restore from backup file</span>
+                                </p>
                             </div>
                         </div>
                         <div class="settings-item-right"><i class="fas fa-chevron-right"></i></div>
@@ -4239,8 +4313,14 @@
                         <div class="settings-item-left">
                             <i class="fas fa-cloud-upload-alt blue"></i>
                             <div class="settings-item-info">
-                                <h5 data-i18n="settingsSync">Sincronizar Ahora</h5>
-                                <p data-i18n="settingsSyncDesc">Guardar datos en la nube</p>
+                                <h5>
+                                    <span class="lang-es">Sincronizar Ahora</span>
+                                    <span class="lang-en" style="display:none;">Sync Now</span>
+                                </h5>
+                                <p>
+                                    <span class="lang-es">Guardar datos en la nube</span>
+                                    <span class="lang-en" style="display:none;">Save data to cloud</span>
+                                </p>
                             </div>
                         </div>
                         <div class="settings-item-right"><i class="fas fa-chevron-right"></i></div>
@@ -4250,8 +4330,14 @@
                         <div class="settings-item-left">
                             <i class="fas fa-trash-alt red"></i>
                             <div class="settings-item-info">
-                                <h5 data-i18n="settingsDelete">Borrar Todos los Datos</h5>
-                                <p data-i18n="settingsDeleteDesc">Eliminar toda la información local</p>
+                                <h5>
+                                    <span class="lang-es">Borrar Todos los Datos</span>
+                                    <span class="lang-en" style="display:none;">Delete All Data</span>
+                                </h5>
+                                <p>
+                                    <span class="lang-es">Eliminar toda la información local</span>
+                                    <span class="lang-en" style="display:none;">Delete all local information</span>
+                                </p>
                             </div>
                         </div>
                         <div class="settings-item-right"><i class="fas fa-chevron-right"></i></div>
@@ -4261,7 +4347,10 @@
                 <!-- App Info -->
                 <div style="text-align: center; padding: 20px; color: #999; font-size: 0.8rem;">
                     <p>MHM Mascota v2.0</p>
-                    <p>© 2026 MHM Pets - Todos los derechos reservados</p>
+                    <p>© 2026 MHM Pets -
+                        <span class="lang-es">Todos los derechos reservados</span>
+                        <span class="lang-en" style="display:none;">All rights reserved</span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -4272,46 +4361,69 @@
         <div class="account-modal">
             <div class="account-modal-header">
                 <button class="account-modal-close" onclick="closeRecoverModal()">&times;</button>
-                <h2><i class="fas fa-key"></i> <span data-i18n="recoverAccount">Recuperar Cuenta</span></h2>
+                <h2><i class="fas fa-key"></i>
+                    <span class="lang-es">Recuperar Cuenta</span>
+                    <span class="lang-en" style="display:none;">Recover Account</span>
+                </h2>
             </div>
             <div class="account-modal-body">
                 <div id="recover-step-1">
-                    <p style="text-align: center; margin-bottom: 20px;" data-i18n="recoverInstructions">
-                        Ingresa el email vinculado a tu cuenta y te enviaremos tu Cloud ID.
+                    <p style="text-align: center; margin-bottom: 20px;">
+                        <span class="lang-es">Ingresa el email vinculado a tu cuenta y te enviaremos tu Cloud ID.</span>
+                        <span class="lang-en" style="display:none;">Enter the email linked to your account and we'll
+                            send you your Cloud ID.</span>
                     </p>
 
                     <div class="account-input-group">
-                        <label data-i18n="registeredEmail">Email Registrado</label>
+                        <label>
+                            <span class="lang-es">Email Registrado</span>
+                            <span class="lang-en" style="display:none;">Registered Email</span>
+                        </label>
                         <input type="email" id="recover-email-input" placeholder="tu@email.com">
                     </div>
 
                     <button class="account-btn account-btn-primary" onclick="recoverAccountByEmail()" id="btn-recover">
                         <i class="fas fa-search"></i>
-                        <span data-i18n="findMyAccount">Buscar mi Cuenta</span>
+                        <span class="lang-es">Buscar mi Cuenta</span>
+                        <span class="lang-en" style="display:none;">Find my Account</span>
                     </button>
 
-                    <div class="account-divider" data-i18n="or">o</div>
+                    <div class="account-divider">
+                        <span class="lang-es">o</span>
+                        <span class="lang-en" style="display:none;">or</span>
+                    </div>
 
                     <div class="account-input-group">
-                        <label data-i18n="haveCloudId">¿Tienes tu Cloud ID?</label>
+                        <label>
+                            <span class="lang-es">¿Tienes tu Cloud ID?</span>
+                            <span class="lang-en" style="display:none;">Have your Cloud ID?</span>
+                        </label>
                         <input type="text" id="recover-cloudid-input" placeholder="MHM-XXXX">
                     </div>
 
                     <button class="account-btn account-btn-secondary" onclick="restoreWithCloudId()">
                         <i class="fas fa-cloud-download-alt"></i>
-                        <span data-i18n="restoreData">Restaurar Datos</span>
+                        <span class="lang-es">Restaurar Datos</span>
+                        <span class="lang-en" style="display:none;">Restore Data</span>
                     </button>
                 </div>
 
                 <div id="recover-step-2" style="display: none;">
                     <div class="account-info-box success">
                         <i class="fas fa-envelope" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                        <h3 data-i18n="checkEmail">¡Revisa tu Email!</h3>
-                        <p data-i18n="sentCloudId">Te enviamos tu Cloud ID.</p>
+                        <h3>
+                            <span class="lang-es">¡Revisa tu Email!</span>
+                            <span class="lang-en" style="display:none;">Check your Email!</span>
+                        </h3>
+                        <p>
+                            <span class="lang-es">Te enviamos tu Cloud ID.</span>
+                            <span class="lang-en" style="display:none;">We sent you your Cloud ID.</span>
+                        </p>
                     </div>
 
                     <button class="account-btn account-btn-primary" onclick="closeRecoverModal()">
-                        <span data-i18n="gotIt">¡Entendido!</span>
+                        <span class="lang-es">¡Entendido!</span>
+                        <span class="lang-en" style="display:none;">Got it!</span>
                     </button>
                 </div>
             </div>
@@ -5197,6 +5309,19 @@
                     }
                 }
             }
+
+            // Update language-specific elements (.lang-es / .lang-en)
+            document.querySelectorAll('.lang-es').forEach(el => {
+                el.style.display = currentLanguage === 'es' ? '' : 'none';
+            });
+            document.querySelectorAll('.lang-en').forEach(el => {
+                el.style.display = currentLanguage === 'en' ? '' : 'none';
+            });
+
+            // Update Cloud ID display in footer if exists
+            if (typeof cloudStorage !== 'undefined' && cloudStorage.isConfigured) {
+                cloudStorage.renderFooterID();
+            }
         }
 
 
@@ -5501,44 +5626,32 @@
                     const el = document.createElement('div');
                     el.id = 'cloud-id-display';
                     el.style.cssText = `
-                        margin-top: 12px;
-                        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-                        padding: 12px 16px;
-                        border-radius: 12px;
+                        margin-top: 10px;
+                        background: #e3f2fd;
+                        padding: 10px 15px;
+                        border-radius: 10px;
                         text-align: center;
                         color: #1565c0;
                         font-weight: bold;
-                        border: 2px solid #1976d2;
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        gap: 10px;
+                        border: 1px solid #90caf9;
                     `;
                     el.innerHTML = `
-                        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; width:100%;">
-                            <span style="font-size:1.1rem;">☁️ ${lang === 'en' ? 'Cloud ID' : 'ID Nube'}:</span>
-                            <code style="background:#fff; padding:6px 14px; border-radius:6px; color:#333; font-size:1rem; font-weight:700; letter-spacing:1px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${this.userId}</code>
+                        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px;">
+                            <span>☁️ ${lang === 'en' ? 'Cloud ID' : 'ID Nube'}: <code style="background:#fff; padding:4px 10px; border-radius:5px; color:#333; font-weight:700;">${this.userId}</code></span>
+                            <button onclick="cloudStorage.promptRecoverData()" style="
+                                cursor: pointer;
+                                background: #1976d2;
+                                color: white;
+                                border: none;
+                                padding: 8px 15px;
+                                border-radius: 6px;
+                                font-size: 0.85rem;
+                                font-weight: 600;
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 5px;
+                            ">🔄 ${lang === 'en' ? 'Recover' : 'Recuperar'}</button>
                         </div>
-                        <button onclick="cloudStorage.promptRecoverData()" style="
-                            cursor: pointer;
-                            background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
-                            color: white;
-                            border: none;
-                            padding: 10px 20px;
-                            border-radius: 8px;
-                            font-size: 0.95rem;
-                            font-weight: 600;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            gap: 6px;
-                            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.35);
-                            min-width: 160px;
-                            transition: transform 0.2s, box-shadow 0.2s;
-                        " onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 12px rgba(25,118,210,0.45)';"
-                           onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(25,118,210,0.35)';">
-                            🔄 ${lang === 'en' ? 'Recover Data' : 'Recuperar Datos'}
-                        </button>
                     `;
                     footer.appendChild(el);
                 }
