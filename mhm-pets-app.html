@@ -5887,19 +5887,52 @@
 
                     // Load pets from hybrid storage (local)
                     this.pets = await this.loadPetsAsync();
+                    const localLastModified = await hybridStorage.getItem('mhm-mascota-last-modified');
 
-                    // If no local pets, try loading from cloud
-                    if (this.pets.length === 0 && typeof cloudStorage !== 'undefined' && cloudStorage.isReady()) {
-                        console.log('☁️ No local data found, checking cloud...');
+                    // Always check cloud for sync (bidirectional sync)
+                    if (typeof cloudStorage !== 'undefined' && cloudStorage.isReady()) {
+                        console.log('☁️ Checking cloud for sync...');
                         const cloudData = await this.loadFromCloud();
+
                         if (cloudData && cloudData.pets && cloudData.pets.length > 0) {
-                            console.log('☁️ Restoring data from cloud:', cloudData.pets.length, 'pets');
-                            this.pets = cloudData.pets;
-                            if (cloudData.currentPetId) {
-                                this.currentPetId = cloudData.currentPetId;
+                            const cloudLastModified = cloudData.savedAt || cloudData.lastModified;
+
+                            // Determine which data is newer
+                            const localDate = localLastModified ? new Date(localLastModified) : new Date(0);
+                            const cloudDate = cloudLastModified ? new Date(cloudLastModified) : new Date(0);
+
+                            console.log('📅 Local last modified:', localDate.toISOString());
+                            console.log('📅 Cloud last modified:', cloudDate.toISOString());
+
+                            if (this.pets.length === 0) {
+                                // No local data, use cloud data
+                                console.log('☁️ No local data, restoring from cloud:', cloudData.pets.length, 'pets');
+                                this.pets = cloudData.pets;
+                                if (cloudData.currentPetId) {
+                                    this.currentPetId = cloudData.currentPetId;
+                                }
+                                await this.savePetsAsync();
+                            } else if (cloudDate > localDate) {
+                                // Cloud is newer - sync down
+                                console.log('☁️ Cloud data is NEWER, syncing down:', cloudData.pets.length, 'pets');
+                                this.pets = cloudData.pets;
+                                if (cloudData.currentPetId) {
+                                    this.currentPetId = cloudData.currentPetId;
+                                }
+                                await this.savePetsAsync();
+                                // Show notification
+                                this.showSyncNotification('down', cloudData.pets.length);
+                            } else if (localDate > cloudDate) {
+                                // Local is newer - sync up
+                                console.log('☁️ Local data is NEWER, syncing up to cloud');
+                                this.saveToCloud();
+                            } else {
+                                console.log('☁️ Data is in sync');
                             }
-                            // Save to local storage for future use
-                            await this.savePetsAsync();
+                        } else if (this.pets.length > 0) {
+                            // No cloud data but has local, upload
+                            console.log('☁️ No cloud data, uploading local data');
+                            this.saveToCloud();
                         }
                     }
 
@@ -5982,6 +6015,8 @@
                 try {
                     const dataStr = JSON.stringify(this.pets);
                     await hybridStorage.setItem(this.storageKey, dataStr);
+                    // Save last modified timestamp for sync comparison
+                    await hybridStorage.setItem('mhm-mascota-last-modified', new Date().toISOString());
                     console.log('💾 Pets saved to hybrid storage');
                     return true;
                 } catch (e) {
@@ -5992,6 +6027,59 @@
                     console.warn(errorMsg);
                     return false;
                 }
+            }
+
+            // Show sync notification
+            showSyncNotification(direction, count) {
+                const lang = this.getCurrentLanguage();
+                let message;
+                if (direction === 'down') {
+                    message = lang === 'en'
+                        ? `☁️ Synced ${count} pet(s) from cloud`
+                        : `☁️ Sincronizado ${count} mascota(s) desde la nube`;
+                } else {
+                    message = lang === 'en'
+                        ? `☁️ Uploaded ${count} pet(s) to cloud`
+                        : `☁️ Subido ${count} mascota(s) a la nube`;
+                }
+
+                // Create toast notification
+                const toast = document.createElement('div');
+                toast.id = 'sync-toast';
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+                    color: white;
+                    padding: 12px 24px;
+                    border-radius: 25px;
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    box-shadow: 0 4px 15px rgba(25, 118, 210, 0.4);
+                    z-index: 99999;
+                    animation: slideDown 0.3s ease;
+                `;
+                toast.textContent = message;
+
+                // Add animation style
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes slideDown {
+                        from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+                        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+                    }
+                `;
+                document.head.appendChild(style);
+
+                document.body.appendChild(toast);
+
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    toast.style.animation = 'slideDown 0.3s ease reverse';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
             }
 
             // Sync save for immediate operations (triggers async save + cloud)
