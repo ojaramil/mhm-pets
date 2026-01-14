@@ -1444,6 +1444,42 @@
                 padding: 4px 8px;
                 font-size: 0.7rem;
             }
+
+            /* Cloud ID display - visible en móvil */
+            #cloud-id-display {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 10px !important;
+                padding: 12px !important;
+                margin-top: 12px !important;
+                border-radius: 12px !important;
+                background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
+                border: 2px solid #1976d2 !important;
+            }
+
+            #cloud-id-display span {
+                flex-direction: column !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+                width: 100% !important;
+            }
+
+            #cloud-id-display code {
+                font-size: 1.1rem !important;
+                padding: 8px 16px !important;
+                display: block !important;
+            }
+
+            #cloud-id-display button {
+                width: 100% !important;
+                padding: 12px 20px !important;
+                font-size: 1rem !important;
+                border-radius: 8px !important;
+                font-weight: 600 !important;
+                box-shadow: 0 2px 8px rgba(21, 101, 192, 0.3) !important;
+            }
         }
 
         /* =============================================
@@ -5464,14 +5500,45 @@
                     const lang = (typeof currentLanguage !== 'undefined') ? currentLanguage : 'es';
                     const el = document.createElement('div');
                     el.id = 'cloud-id-display';
-                    el.style.cssText = "margin-top:10px; background:#e3f2fd; padding:8px 12px; border-radius:8px; text-align:center; color:#1565c0; font-weight:bold; border: 1px solid #90caf9;";
+                    el.style.cssText = `
+                        margin-top: 12px;
+                        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+                        padding: 12px 16px;
+                        border-radius: 12px;
+                        text-align: center;
+                        color: #1565c0;
+                        font-weight: bold;
+                        border: 2px solid #1976d2;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 10px;
+                    `;
                     el.innerHTML = `
-                        <span style="display:inline-flex; align-items:center; gap:8px;">
-                            ☁️ ${lang === 'en' ? 'Cloud ID' : 'ID Nube'}: <code style="background:#fff; padding:2px 8px; border-radius:4px; color:#333;">${this.userId}</code>
-                            <button onclick="cloudStorage.promptRecoverData()" style="cursor:pointer; background:#1565c0; color:white; border:none; padding:4px 10px; border-radius:4px; font-size:0.8rem;">
-                                🔄 ${lang === 'en' ? 'Recover' : 'Recuperar'}
-                            </button>
-                        </span>
+                        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; width:100%;">
+                            <span style="font-size:1.1rem;">☁️ ${lang === 'en' ? 'Cloud ID' : 'ID Nube'}:</span>
+                            <code style="background:#fff; padding:6px 14px; border-radius:6px; color:#333; font-size:1rem; font-weight:700; letter-spacing:1px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">${this.userId}</code>
+                        </div>
+                        <button onclick="cloudStorage.promptRecoverData()" style="
+                            cursor: pointer;
+                            background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+                            color: white;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 8px;
+                            font-size: 0.95rem;
+                            font-weight: 600;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 6px;
+                            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.35);
+                            min-width: 160px;
+                            transition: transform 0.2s, box-shadow 0.2s;
+                        " onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 12px rgba(25,118,210,0.45)';"
+                           onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(25,118,210,0.35)';">
+                            🔄 ${lang === 'en' ? 'Recover Data' : 'Recuperar Datos'}
+                        </button>
                     `;
                     footer.appendChild(el);
                 }
