@@ -2655,10 +2655,62 @@
             font-size: 0.9rem;
         }
 
-        /* Media Query for User Panel */
+        /* Media Query for User Panel - Tablets and small screens */
+        @media (max-width: 768px) {
+            .user-panel-modal {
+                max-width: calc(100% - 20px);
+                margin: 10px;
+            }
+
+            .account-modal-overlay {
+                padding: 10px;
+            }
+
+            .account-modal-body {
+                padding: 15px;
+            }
+
+            .account-status-card {
+                padding: 15px;
+            }
+
+            .account-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8rem;
+            }
+
+            /* Ensure Cloud ID is always visible and prominent */
+            .cloud-id,
+            #user-panel-cloud-id {
+                font-size: 1.2rem !important;
+                word-break: break-all;
+                padding: 8px 12px;
+                background: rgba(21, 101, 192, 0.1);
+                border-radius: 8px;
+                display: inline-block;
+            }
+
+            .account-email {
+                font-size: 0.9rem;
+                word-break: break-word;
+            }
+        }
+
+        /* Media Query for User Panel - Mobile phones */
         @media (max-width: 480px) {
             .user-panel-modal {
                 max-width: 100%;
+                margin: 5px;
+                border-radius: 15px;
+            }
+
+            .account-modal-header {
+                padding: 15px;
+            }
+
+            .account-modal-header h2 {
+                font-size: 1.2rem;
             }
 
             .user-panel-tab {
@@ -2672,10 +2724,81 @@
 
             .account-quick-stats {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
             }
 
             .quick-stat:last-child {
                 grid-column: span 2;
+            }
+
+            .quick-stat-value {
+                font-size: 1.3rem;
+            }
+
+            .quick-stat-label {
+                font-size: 0.7rem;
+            }
+
+            .account-plan-badge {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .cloud-id,
+            #user-panel-cloud-id {
+                font-size: 1rem !important;
+                letter-spacing: 1px;
+            }
+
+            .account-btn {
+                padding: 10px 15px;
+                font-size: 0.85rem;
+            }
+
+            .account-info-box {
+                padding: 12px;
+                font-size: 0.85rem;
+            }
+
+            .account-input-group input {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Iframe-specific optimizations */
+        @media (max-width: 400px) {
+            .user-panel-modal {
+                border-radius: 12px;
+            }
+
+            .account-avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+            }
+
+            .cloud-id,
+            #user-panel-cloud-id {
+                font-size: 0.95rem !important;
+                padding: 6px 10px;
+            }
+
+            .account-modal-header {
+                padding: 12px;
+            }
+
+            .account-modal-header h2 {
+                font-size: 1rem;
+                gap: 6px;
+            }
+
+            .account-modal-close {
+                width: 26px;
+                height: 26px;
+                top: 10px;
+                right: 10px;
             }
         }
     </style>
@@ -6523,9 +6646,13 @@
                     const lang = this.dataset.lang;
                     langButtons.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
+
+                    // IMPORTANT: Save current data before changing language
+                    saveCurrentPetDataSilent();
+
                     setLanguage(lang);
 
-                    // Reload data with new language
+                    // Reload data with new language (will use saved data)
                     loadCurrentPetData();
                 });
             });
@@ -6680,90 +6807,88 @@
         // PET DATA
         // ==========================================
         function initializePetData() {
-            // First try to get saved data from localStorage via petManager
+            // Get saved data from petManager (NO mockData fallback)
             const currentPet = petManager.getCurrentPet();
             const savedPetInfo = currentPet?.data?.petInfo;
 
-            // Use saved data if available, otherwise fall back to mock data (for demo)
-            const petData = savedPetInfo && savedPetInfo.name
-                ? savedPetInfo
-                : (typeof PET_DATA !== 'undefined' ? PET_DATA : null);
-
-            if (!petData) {
+            // Only use saved data if available
+            if (!savedPetInfo) {
                 // No data available, just set the pet name from petManager
                 setFieldValue('pet-name', currentPet?.name || '');
                 return;
             }
 
-            setFieldValue('pet-name', petData.name || currentPet?.name || '');
-            setFieldValue('pet-microchip', petData.microchip || '');
-            setFieldValue('pet-breed', petData.breed || '');
-            setFieldValue('pet-color', petData.color || '');
-            setFieldValue('pet-dob', petData.dateOfBirth || '');
-            setFieldValue('pet-age', petData.age || '');
-            setFieldValue('pet-weight', petData.weight || '');
-            setSelectValue('pet-size', petData.size);
-            setSelectValue('pet-temperament', petData.temperament);
-            setSelectValue('pet-activity', petData.activityLevel);
-            setFieldValue('pet-behavior-notes', petData.behaviorNotes || '');
+            setFieldValue('pet-name', savedPetInfo.name || currentPet?.name || '');
+            setFieldValue('pet-microchip', savedPetInfo.microchip || '');
+            setFieldValue('pet-breed', savedPetInfo.breed || '');
+            setFieldValue('pet-color', savedPetInfo.color || '');
+            setFieldValue('pet-dob', savedPetInfo.dateOfBirth || '');
+            setFieldValue('pet-age', savedPetInfo.age || '');
+            setFieldValue('pet-weight', savedPetInfo.weight || '');
+            setSelectValue('pet-size', savedPetInfo.size);
+            setSelectValue('pet-temperament', savedPetInfo.temperament);
+            setSelectValue('pet-activity', savedPetInfo.activityLevel);
+            setFieldValue('pet-behavior-notes', savedPetInfo.behaviorNotes || '');
 
-            setRadioValue('pet-sex', petData.gender || '');
-            setRadioValue('pet-sterilized', petData.sterilized ? 'si' : 'no');
-            setRadioValue('pet-social', petData.social || '');
+            setRadioValue('pet-sex', savedPetInfo.gender || '');
+            if (savedPetInfo.sterilized !== undefined) {
+                setRadioValue('pet-sterilized', savedPetInfo.sterilized ? 'si' : 'no');
+            }
+            setRadioValue('pet-social', savedPetInfo.social || '');
 
             // Set species
-            const speciesValue = (petData.species || 'perro').toLowerCase();
-            const speciesOptions = document.querySelectorAll('.species-option');
-            speciesOptions.forEach(opt => {
-                opt.classList.remove('active');
-                if (opt.dataset.species === speciesValue) {
-                    opt.classList.add('active');
-                }
-            });
+            if (savedPetInfo.species) {
+                const speciesValue = savedPetInfo.species.toLowerCase();
+                const speciesOptions = document.querySelectorAll('.species-option');
+                speciesOptions.forEach(opt => {
+                    opt.classList.remove('active');
+                    if (opt.dataset.species === speciesValue) {
+                        opt.classList.add('active');
+                    }
+                });
+            }
 
             // Update info strip
-            updatePetNameInHeader(petData.name || currentPet?.name, petData.breed);
+            updatePetNameInHeader(savedPetInfo.name || currentPet?.name, savedPetInfo.breed);
 
-            console.log('📋 Pet data loaded from:', savedPetInfo && savedPetInfo.name ? 'localStorage' : 'mockData');
+            console.log('📋 Pet data loaded from saved data');
         }
 
         // ==========================================
         // OWNER DATA
         // ==========================================
         function initializeOwnerData() {
-            // First try to get saved data from localStorage via petManager
+            // Get saved data from petManager (NO mockData fallback)
             const currentPet = petManager.getCurrentPet();
             const savedOwnerInfo = currentPet?.data?.ownerInfo;
 
-            // Use saved data if available, otherwise fall back to mock data (for demo)
-            const ownerData = savedOwnerInfo && savedOwnerInfo.name
-                ? savedOwnerInfo
-                : (typeof OWNER_DATA !== 'undefined' ? OWNER_DATA : null);
+            // Only use saved data if available
+            if (!savedOwnerInfo) return;
 
-            if (!ownerData) return;
-
-            setFieldValue('owner-name', ownerData.name || '');
-            setSelectValue('owner-id-type', ownerData.idType);
-            setFieldValue('owner-id', ownerData.idNumber || '');
-            setFieldValue('owner-address', ownerData.address || '');
-            setFieldValue('owner-city', ownerData.city || '');
-            setFieldValue('owner-cell', ownerData.cellPhone || '');
-            setFieldValue('owner-phone', ownerData.phone || '');
-            setFieldValue('owner-email', ownerData.email || '');
+            setFieldValue('owner-name', savedOwnerInfo.name || '');
+            setSelectValue('owner-id-type', savedOwnerInfo.idType);
+            setFieldValue('owner-id', savedOwnerInfo.idNumber || '');
+            setFieldValue('owner-address', savedOwnerInfo.address || '');
+            setFieldValue('owner-city', savedOwnerInfo.city || '');
+            setFieldValue('owner-cell', savedOwnerInfo.cellPhone || '');
+            setFieldValue('owner-phone', savedOwnerInfo.phone || '');
+            setFieldValue('owner-email', savedOwnerInfo.email || '');
 
             // Emergency contact
-            if (ownerData.emergencyContact) {
-                setFieldValue('contact-name', ownerData.emergencyContact.name || '');
-                setFieldValue('contact-relation', ownerData.emergencyContact.relation || '');
-                setFieldValue('contact-cell', ownerData.emergencyContact.cellPhone || '');
-                setFieldValue('contact-phone', ownerData.emergencyContact.phone || '');
-                setRadioValue('contact-auth', ownerData.emergencyContact.authorized ? 'si' : 'no');
+            if (savedOwnerInfo.emergencyContact) {
+                setFieldValue('contact-name', savedOwnerInfo.emergencyContact.name || '');
+                setFieldValue('contact-relation', savedOwnerInfo.emergencyContact.relation || '');
+                setFieldValue('contact-cell', savedOwnerInfo.emergencyContact.cellPhone || '');
+                setFieldValue('contact-phone', savedOwnerInfo.emergencyContact.phone || '');
+                if (savedOwnerInfo.emergencyContact.authorized !== undefined) {
+                    setRadioValue('contact-auth', savedOwnerInfo.emergencyContact.authorized ? 'si' : 'no');
+                }
             }
 
             // Update header
-            updateOwnerInHeader(ownerData.name || '');
+            updateOwnerInHeader(savedOwnerInfo.name || '');
 
-            console.log('📋 Owner data loaded from:', savedOwnerInfo && savedOwnerInfo.name ? 'localStorage' : 'mockData');
+            console.log('📋 Owner data loaded from saved data');
         }
 
         // ==========================================
@@ -6834,7 +6959,13 @@
         }
 
         function renderPathologies() {
-            if (typeof PET_PATHOLOGIES === 'undefined') return;
+            // First try to load saved pathologies from petManager
+            const currentPet = petManager.getCurrentPet();
+            const savedPathologies = currentPet?.data?.pathologies;
+
+            // Use saved data if exists, otherwise skip (NO mockData by default)
+            const pathologiesData = savedPathologies;
+            if (!pathologiesData) return;
 
             // Check pathologies for each group
             const groupMap = {
@@ -6847,8 +6978,8 @@
             };
 
             Object.keys(groupMap).forEach(key => {
-                if (PET_PATHOLOGIES[key]) {
-                    PET_PATHOLOGIES[key].forEach(pathoKey => {
+                if (pathologiesData[key]) {
+                    pathologiesData[key].forEach(pathoKey => {
                         // Find matching checkbox
                         const checkboxes = document.querySelectorAll(`#${groupMap[key]} input[type="checkbox"]`);
                         checkboxes.forEach(cb => {
@@ -6865,8 +6996,8 @@
             });
 
             // Set other conditions
-            if (PET_PATHOLOGIES.other) {
-                setFieldValue('patho-other', PET_PATHOLOGIES.other);
+            if (pathologiesData.other) {
+                setFieldValue('patho-other', pathologiesData.other);
             }
         }
 
@@ -6874,38 +7005,44 @@
         // MEDICATIONS
         // ==========================================
         function initializeMedications() {
-            if (typeof PET_MEDICATIONS === 'undefined') return;
-
             const tbody = document.getElementById('meds-tbody');
             if (!tbody) return;
 
-            PET_MEDICATIONS.forEach(med => {
-                const row = createMedicationRow(med);
-                tbody.appendChild(row);
-            });
+            // First try to load saved medications from petManager
+            const currentPet = petManager.getCurrentPet();
+            const savedMedications = currentPet?.data?.medications;
 
-            // Add empty rows
+            // Use saved data if exists
+            if (savedMedications && savedMedications.length > 0) {
+                savedMedications.forEach(med => {
+                    const row = createMedicationRow(med);
+                    tbody.appendChild(row);
+                });
+            }
+
+            // Add empty rows for new entries
             for (let i = 0; i < 3; i++) {
                 const row = createMedicationRow({});
                 tbody.appendChild(row);
             }
 
-            // Preventives
-            if (typeof PET_PREVENTIVES !== 'undefined') {
-                if (PET_PREVENTIVES.fleaTick) {
-                    setFieldValue('flea-product', PET_PREVENTIVES.fleaTick.product);
-                    setFieldValue('flea-date', PET_PREVENTIVES.fleaTick.lastDate);
-                    setFieldValue('flea-next', PET_PREVENTIVES.fleaTick.nextDate);
+            // Load saved preventives
+            const savedPreventives = currentPet?.data?.preventives;
+            if (savedPreventives) {
+                if (savedPreventives.fleaTick) {
+                    setFieldValue('flea-product', savedPreventives.fleaTick.product);
+                    setFieldValue('flea-date', savedPreventives.fleaTick.lastDate);
+                    setFieldValue('flea-next', savedPreventives.fleaTick.nextDate);
                 }
-                if (PET_PREVENTIVES.dewormer) {
-                    setFieldValue('dewormer-product', PET_PREVENTIVES.dewormer.product);
-                    setFieldValue('dewormer-date', PET_PREVENTIVES.dewormer.lastDate);
-                    setFieldValue('dewormer-next', PET_PREVENTIVES.dewormer.nextDate);
+                if (savedPreventives.dewormer) {
+                    setFieldValue('dewormer-product', savedPreventives.dewormer.product);
+                    setFieldValue('dewormer-date', savedPreventives.dewormer.lastDate);
+                    setFieldValue('dewormer-next', savedPreventives.dewormer.nextDate);
                 }
-                if (PET_PREVENTIVES.heartworm) {
-                    setFieldValue('heartworm-product', PET_PREVENTIVES.heartworm.product);
-                    setFieldValue('heartworm-date', PET_PREVENTIVES.heartworm.lastDate);
-                    setFieldValue('heartworm-next', PET_PREVENTIVES.heartworm.nextDate);
+                if (savedPreventives.heartworm) {
+                    setFieldValue('heartworm-product', savedPreventives.heartworm.product);
+                    setFieldValue('heartworm-date', savedPreventives.heartworm.lastDate);
+                    setFieldValue('heartworm-next', savedPreventives.heartworm.nextDate);
                 }
             }
         }
@@ -6928,24 +7065,29 @@
         // SURGERIES
         // ==========================================
         function initializeSurgeries() {
-            if (typeof PET_SURGERIES === 'undefined') return;
-
             const tbody = document.getElementById('surgeries-tbody');
             if (!tbody) return;
 
-            PET_SURGERIES.forEach(surgery => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-            <td><input type="date" class="mhm-input" value="${surgery.date || ''}" style="padding: 4px;"></td>
-            <td><input type="text" class="mhm-input" value="${surgery.procedure || ''}" style="padding: 4px;"></td>
-            <td><input type="text" class="mhm-input" value="${surgery.clinic || ''}" style="padding: 4px;"></td>
-            <td><input type="text" class="mhm-input" value="${surgery.vet || ''}" style="padding: 4px;"></td>
-            <td><input type="text" class="mhm-input" value="${surgery.notes || ''}" style="padding: 4px;"></td>
-        `;
-                tbody.appendChild(row);
-            });
+            // First try to load saved surgeries from petManager
+            const currentPet = petManager.getCurrentPet();
+            const savedSurgeries = currentPet?.data?.surgeries;
 
-            // Add empty rows
+            // Use saved data if exists
+            if (savedSurgeries && savedSurgeries.length > 0) {
+                savedSurgeries.forEach(surgery => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                <td><input type="date" class="mhm-input" value="${surgery.date || ''}" style="padding: 4px;"></td>
+                <td><input type="text" class="mhm-input" value="${surgery.procedure || ''}" style="padding: 4px;"></td>
+                <td><input type="text" class="mhm-input" value="${surgery.clinic || ''}" style="padding: 4px;"></td>
+                <td><input type="text" class="mhm-input" value="${surgery.vet || ''}" style="padding: 4px;"></td>
+                <td><input type="text" class="mhm-input" value="${surgery.notes || ''}" style="padding: 4px;"></td>
+            `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            // Add empty rows for new entries
             for (let i = 0; i < 3; i++) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -6958,11 +7100,12 @@
                 tbody.appendChild(row);
             }
 
-            // Sterilization
-            if (typeof PET_STERILIZATION !== 'undefined') {
-                setRadioValue('sterilization', PET_STERILIZATION.done ? 'si' : 'no');
-                setFieldValue('sterilization-date', PET_STERILIZATION.date);
-                setFieldValue('sterilization-clinic', PET_STERILIZATION.clinic);
+            // Load saved sterilization data
+            const savedSterilization = currentPet?.data?.sterilization;
+            if (savedSterilization) {
+                setRadioValue('sterilization', savedSterilization.done ? 'si' : 'no');
+                setFieldValue('sterilization-date', savedSterilization.date);
+                setFieldValue('sterilization-clinic', savedSterilization.clinic);
             }
         }
 
@@ -6970,22 +7113,29 @@
         // ALLERGIES
         // ==========================================
         function initializeAllergies() {
-            if (typeof PET_ALLERGIES === 'undefined') return;
+            // First try to load saved allergies from petManager
+            const currentPet = petManager.getCurrentPet();
+            const savedAllergies = currentPet?.data?.allergies;
 
-            // Food allergies checkboxes
-            PET_ALLERGIES.food.forEach(food => {
-                const checkbox = document.getElementById(`allergy-${food}`);
-                if (checkbox) checkbox.checked = true;
-            });
+            // Food allergies checkboxes - load saved data if exists
+            if (savedAllergies && savedAllergies.food) {
+                savedAllergies.food.forEach(food => {
+                    const checkbox = document.getElementById(`allergy-${food}`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
 
             // Medication allergies
             const medContainer = document.getElementById('med-allergies-container');
             if (medContainer) {
-                PET_ALLERGIES.medications.forEach(allergy => {
-                    const row = createAllergyRow(allergy.name, allergy.reaction);
-                    medContainer.appendChild(row);
-                });
-                // Add empty rows
+                // Load saved medication allergies if exists
+                if (savedAllergies && savedAllergies.medications && savedAllergies.medications.length > 0) {
+                    savedAllergies.medications.forEach(allergy => {
+                        const row = createAllergyRow(allergy.name, allergy.reaction);
+                        medContainer.appendChild(row);
+                    });
+                }
+                // Add empty rows for new entries
                 for (let i = 0; i < 4; i++) {
                     const row = createAllergyRow('', '');
                     medContainer.appendChild(row);
@@ -6995,11 +7145,14 @@
             // Environmental allergies
             const envContainer = document.getElementById('env-allergies-container');
             if (envContainer) {
-                PET_ALLERGIES.environmental.forEach(allergy => {
-                    const row = createAllergyRow(allergy.name, allergy.reaction);
-                    envContainer.appendChild(row);
-                });
-                // Add empty rows
+                // Load saved environmental allergies if exists
+                if (savedAllergies && savedAllergies.environmental && savedAllergies.environmental.length > 0) {
+                    savedAllergies.environmental.forEach(allergy => {
+                        const row = createAllergyRow(allergy.name, allergy.reaction);
+                        envContainer.appendChild(row);
+                    });
+                }
+                // Add empty rows for new entries
                 for (let i = 0; i < 4; i++) {
                     const row = createAllergyRow('', '');
                     envContainer.appendChild(row);
@@ -7007,7 +7160,9 @@
             }
 
             // Reactions
-            setFieldValue('allergy-reactions', PET_ALLERGIES.reactions);
+            if (savedAllergies && savedAllergies.reactions) {
+                setFieldValue('allergy-reactions', savedAllergies.reactions);
+            }
         }
 
         function createAllergyRow(name, reaction) {
@@ -7030,142 +7185,312 @@
         // VACCINES
         // ==========================================
         function initializeVaccines() {
-            if (typeof PET_VACCINES === 'undefined') return;
+            console.log('🔄 initializeVaccines() called');
+
+            // First try to load saved vaccines from petManager
+            const currentPet = petManager.getCurrentPet();
+            const savedVaccines = currentPet?.data?.vaccines;
+
+            // Default vaccine names for structure
+            const defaultDogVaccines = [
+                { name: 'Parvovirus' },
+                { name: 'Moquillo' },
+                { name: 'Hepatitis' },
+                { name: 'Leptospirosis' },
+                { name: 'Rabia' },
+                { name: 'Bordetella (Tos Perruna)' }
+            ];
+
+            const defaultCatVaccines = [
+                { name: 'Triple Felina' },
+                { name: 'Leucemia Felina' },
+                { name: 'Rabia' }
+            ];
+
+            // Helper function to create vaccine cell with checkbox and date picker
+            function createVaccineCell(isChecked, dateValue, doseKey) {
+                const cell = document.createElement('td');
+                cell.className = 'vaccine-dose-cell';
+                cell.style.cssText = 'text-align: center; vertical-align: top; padding: 8px 4px;';
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'vaccine-dose-wrapper';
+                wrapper.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 4px;';
+
+                // Checkbox
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'mhm-checkbox vaccine-checkbox';
+                checkbox.checked = isChecked || false;
+                checkbox.setAttribute('data-dose', doseKey);
+                checkbox.style.cssText = 'width: 18px; height: 18px; cursor: pointer;';
+
+                // Date container (visible when checked)
+                const dateContainer = document.createElement('div');
+                dateContainer.className = 'vaccine-date-container';
+                dateContainer.style.cssText = `display: ${isChecked ? 'block' : 'none'}; margin-top: 4px;`;
+
+                // Date input
+                const dateInput = document.createElement('input');
+                dateInput.type = 'date';
+                dateInput.className = 'mhm-input vaccine-date-input';
+                dateInput.value = dateValue || '';
+                dateInput.style.cssText = 'padding: 2px 4px; font-size: 0.65rem; width: 95px; border-radius: 4px; border: 1px solid #ccc;';
+
+                // Date display (shows formatted date below checkbox)
+                const dateDisplay = document.createElement('span');
+                dateDisplay.className = 'vaccine-date-display';
+                dateDisplay.style.cssText = 'display: block; font-size: 0.6rem; color: #666; margin-top: 2px; white-space: nowrap;';
+                dateDisplay.textContent = dateValue ? formatDateShort(dateValue) : '';
+
+                dateContainer.appendChild(dateInput);
+                dateContainer.appendChild(dateDisplay);
+
+                // Event: show/hide date when checkbox changes
+                checkbox.addEventListener('change', function () {
+                    dateContainer.style.display = this.checked ? 'block' : 'none';
+                    if (this.checked && !dateInput.value) {
+                        // Auto-set today's date when checked
+                        const today = new Date().toISOString().split('T')[0];
+                        dateInput.value = today;
+                        dateDisplay.textContent = formatDateShort(today);
+                    }
+                });
+
+                // Event: update date display when date changes
+                dateInput.addEventListener('change', function () {
+                    dateDisplay.textContent = this.value ? formatDateShort(this.value) : '';
+                });
+
+                wrapper.appendChild(checkbox);
+                wrapper.appendChild(dateContainer);
+                cell.appendChild(wrapper);
+
+                return cell;
+            }
+
+            // Helper to format date in short format
+            function formatDateShort(dateStr) {
+                if (!dateStr) return '';
+                const date = new Date(dateStr + 'T00:00:00');
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const year = date.getFullYear().toString().slice(-2);
+                return `${day}/${month}/${year}`;
+            }
 
             // Dog vaccines
             const dogTbody = document.getElementById('dog-vaccines-tbody');
+            console.log('🐕 Dog vaccines tbody:', dogTbody);
+
             if (dogTbody) {
-                PET_VACCINES.dog.forEach(vax => {
+                // Clear existing rows first to prevent duplicates
+                dogTbody.innerHTML = '';
+
+                const dogVaxData = (savedVaccines?.dog && savedVaccines.dog.length > 0) ? savedVaccines.dog : defaultDogVaccines;
+                console.log('🐕 Dog vaccines data:', dogVaxData);
+
+                dogVaxData.forEach((vax, index) => {
                     const row = document.createElement('tr');
-                    row.innerHTML = `
-                <td class="text-left" style="font-weight: 600;">${vax.name}</td>
-                <td>${vax.dose1 ? `<input type="checkbox" class="mhm-checkbox" checked><br><small>${formatDate(vax.dose1)}</small>` : '<input type="checkbox" class="mhm-checkbox">'}</td>
-                <td>${vax.dose2 ? `<input type="checkbox" class="mhm-checkbox" checked><br><small>${formatDate(vax.dose2)}</small>` : vax.dose2 === null ? '' : '<input type="checkbox" class="mhm-checkbox">'}</td>
-                <td>${vax.dose3 ? `<input type="checkbox" class="mhm-checkbox" checked><br><small>${formatDate(vax.dose3)}</small>` : vax.dose3 === null ? '' : '<input type="checkbox" class="mhm-checkbox">'}</td>
-                <td>${vax.annual ? `<input type="checkbox" class="mhm-checkbox" checked><br><small>${formatDate(vax.annual)}</small>` : '<input type="checkbox" class="mhm-checkbox">'}</td>
-                <td><input type="date" class="mhm-input" value="${vax.next || ''}" style="padding: 4px; font-size: 0.75rem;"></td>
-            `;
+                    row.setAttribute('data-vaccine-index', index);
+
+                    // Vaccine name cell
+                    const nameCell = document.createElement('td');
+                    nameCell.className = 'text-left';
+                    nameCell.style.cssText = 'font-weight: 600; padding: 8px;';
+                    nameCell.textContent = vax.name;
+                    row.appendChild(nameCell);
+
+                    // Dose 1
+                    row.appendChild(createVaccineCell(vax.dose1Applied, vax.dose1Date, 'dose1'));
+
+                    // Dose 2
+                    row.appendChild(createVaccineCell(vax.dose2Applied, vax.dose2Date, 'dose2'));
+
+                    // Dose 3
+                    row.appendChild(createVaccineCell(vax.dose3Applied, vax.dose3Date, 'dose3'));
+
+                    // Annual Booster
+                    row.appendChild(createVaccineCell(vax.annualApplied, vax.annualDate, 'annual'));
+
+                    // Next Date cell
+                    const nextDateCell = document.createElement('td');
+                    nextDateCell.style.cssText = 'text-align: center; vertical-align: middle;';
+                    const nextDateInput = document.createElement('input');
+                    nextDateInput.type = 'date';
+                    nextDateInput.className = 'mhm-input';
+                    nextDateInput.value = vax.nextDate || '';
+                    nextDateInput.style.cssText = 'padding: 4px; font-size: 0.75rem; width: 110px;';
+                    nextDateCell.appendChild(nextDateInput);
+                    row.appendChild(nextDateCell);
+
                     dogTbody.appendChild(row);
                 });
+                console.log('✅ Dog vaccines rows added:', dogTbody.children.length);
+            } else {
+                console.error('❌ dog-vaccines-tbody not found!');
             }
 
             // Cat vaccines
             const catTbody = document.getElementById('cat-vaccines-tbody');
+            console.log('🐱 Cat vaccines tbody:', catTbody);
+
             if (catTbody) {
-                PET_VACCINES.cat.forEach(vax => {
+                // Clear existing rows first to prevent duplicates
+                catTbody.innerHTML = '';
+
+                const catVaxData = (savedVaccines?.cat && savedVaccines.cat.length > 0) ? savedVaccines.cat : defaultCatVaccines;
+                console.log('🐱 Cat vaccines data:', catVaxData);
+
+                catVaxData.forEach((vax, index) => {
                     const row = document.createElement('tr');
-                    row.innerHTML = `
-                <td class="text-left" style="font-weight: 600;">${vax.name}</td>
-                <td><input type="checkbox" class="mhm-checkbox"></td>
-                <td><input type="checkbox" class="mhm-checkbox"></td>
-                <td><input type="checkbox" class="mhm-checkbox"></td>
-                <td><input type="date" class="mhm-input" style="padding: 4px; font-size: 0.75rem;"></td>
-            `;
+                    row.setAttribute('data-vaccine-index', index);
+
+                    // Vaccine name cell
+                    const nameCell = document.createElement('td');
+                    nameCell.className = 'text-left';
+                    nameCell.style.cssText = 'font-weight: 600; padding: 8px;';
+                    nameCell.textContent = vax.name;
+                    row.appendChild(nameCell);
+
+                    // Dose 1
+                    row.appendChild(createVaccineCell(vax.dose1Applied, vax.dose1Date, 'dose1'));
+
+                    // Dose 2
+                    row.appendChild(createVaccineCell(vax.dose2Applied, vax.dose2Date, 'dose2'));
+
+                    // Annual Booster (cats don't have dose 3 typically)
+                    row.appendChild(createVaccineCell(vax.annualApplied, vax.annualDate, 'annual'));
+
+                    // Next Date cell
+                    const nextDateCell = document.createElement('td');
+                    nextDateCell.style.cssText = 'text-align: center; vertical-align: middle;';
+                    const nextDateInput = document.createElement('input');
+                    nextDateInput.type = 'date';
+                    nextDateInput.className = 'mhm-input';
+                    nextDateInput.value = vax.nextDate || '';
+                    nextDateInput.style.cssText = 'padding: 4px; font-size: 0.75rem; width: 110px;';
+                    nextDateCell.appendChild(nextDateInput);
+                    row.appendChild(nextDateCell);
+
                     catTbody.appendChild(row);
                 });
+                console.log('✅ Cat vaccines rows added:', catTbody.children.length);
+            } else {
+                console.error('❌ cat-vaccines-tbody not found!');
             }
 
-            // Vaccine history
-            const historyTbody = document.getElementById('vaccine-history-tbody');
-            if (historyTbody && typeof VACCINE_HISTORY !== 'undefined') {
-                VACCINE_HISTORY.forEach(record => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                <td>${formatDate(record.date)}</td>
-                <td class="text-left">${record.vaccine}</td>
-                <td>${record.lot}</td>
-                <td>${record.vet}</td>
-                <td>${record.clinic}</td>
-                <td>${formatDate(record.nextDate)}</td>
-            `;
-                    historyTbody.appendChild(row);
-                });
-            }
+            console.log('✅ initializeVaccines() completed');
         }
 
         // ==========================================
         // VETERINARIANS
         // ==========================================
         function initializeVets() {
-            if (typeof PET_VETS === 'undefined') return;
+            // First try to load saved vets from petManager
+            const currentPet = petManager.getCurrentPet();
+            const savedVets = currentPet?.data?.vets;
 
-            const main = PET_VETS.main;
-            setFieldValue('vet-main-name', main.name);
-            setFieldValue('vet-main-specialty', main.specialty);
-            setFieldValue('vet-main-clinic', main.clinic);
-            setFieldValue('vet-main-phone', main.phone);
-            setFieldValue('vet-main-cell', main.cell);
-            setFieldValue('vet-main-address', main.address);
-            setFieldValue('vet-main-hours', main.hours);
+            // Load main vet data if saved
+            if (savedVets && savedVets.main) {
+                const main = savedVets.main;
+                setFieldValue('vet-main-name', main.name);
+                setFieldValue('vet-main-specialty', main.specialty);
+                setFieldValue('vet-main-clinic', main.clinic);
+                setFieldValue('vet-main-phone', main.phone);
+                setFieldValue('vet-main-cell', main.cell);
+                setFieldValue('vet-main-address', main.address);
+                setFieldValue('vet-main-hours', main.hours);
+            }
 
             // Specialists
             const container = document.getElementById('specialists-container');
             if (container) {
-                PET_VETS.specialists.forEach((spec, idx) => {
-                    const card = document.createElement('div');
-                    card.className = 'mhm-card mb-2';
-                    card.innerHTML = `
+                // Load saved specialists if exist
+                if (savedVets && savedVets.specialists && savedVets.specialists.length > 0) {
+                    savedVets.specialists.forEach((spec, idx) => {
+                        const card = createSpecialistCard(spec, idx);
+                        container.appendChild(card);
+                    });
+                }
+                // Always add 2 empty specialist cards for new entries
+                for (let i = 0; i < 2; i++) {
+                    const card = createSpecialistCard({}, container.children.length);
+                    container.appendChild(card);
+                }
+            }
+
+            // Load emergency clinic data if saved
+            if (savedVets && savedVets.emergency) {
+                setFieldValue('emergency-clinic', savedVets.emergency.name);
+                setFieldValue('emergency-phone', savedVets.emergency.phone);
+                setFieldValue('emergency-address', savedVets.emergency.address);
+            }
+        }
+
+        function createSpecialistCard(spec, idx) {
+            const card = document.createElement('div');
+            card.className = 'mhm-card mb-2';
+            card.innerHTML = `
                 <h4 class="mhm-card-title" style="font-size: 0.9rem; color: #666;">
-                    <i class="fas fa-user-md"></i> ${t('specialists')} ${idx + 1}: ${spec.specialty}
+                    <i class="fas fa-user-md"></i> ${t('specialists')} ${idx + 1}${spec.specialty ? ': ' + spec.specialty : ''}
                 </h4>
                 <div class="mhm-form-row">
                     <div class="mhm-form-group mhm-form-group--large">
                         <label class="mhm-label" data-i18n="vetName">${t('vetName')}</label>
-                        <input type="text" class="mhm-input" value="${spec.name}">
+                        <input type="text" class="mhm-input" value="${spec.name || ''}" placeholder="...">
                     </div>
                     <div class="mhm-form-group">
                         <label class="mhm-label" data-i18n="specialty">${t('specialty')}</label>
-                        <input type="text" class="mhm-input" value="${spec.specialty}">
+                        <input type="text" class="mhm-input" value="${spec.specialty || ''}" placeholder="...">
                     </div>
                 </div>
                 <div class="mhm-form-row">
                     <div class="mhm-form-group mhm-form-group--large">
                         <label class="mhm-label" data-i18n="clinic">${t('clinic')}</label>
-                        <input type="text" class="mhm-input" value="${spec.clinic}">
+                        <input type="text" class="mhm-input" value="${spec.clinic || ''}" placeholder="...">
                     </div>
                     <div class="mhm-form-group">
                         <label class="mhm-label" data-i18n="phone">${t('phone')}</label>
-                        <input type="tel" class="mhm-input" value="${spec.phone}">
+                        <input type="tel" class="mhm-input" value="${spec.phone || ''}" placeholder="...">
                     </div>
                     <div class="mhm-form-group">
                         <label class="mhm-label" data-i18n="cellPhone">${t('cellPhone')}</label>
-                        <input type="tel" class="mhm-input" value="${spec.cell}">
+                        <input type="tel" class="mhm-input" value="${spec.cell || ''}" placeholder="...">
                     </div>
                 </div>
             `;
-                    container.appendChild(card);
-                });
-            }
-
-            // Emergency clinic
-            setFieldValue('emergency-clinic', PET_VETS.emergency.name);
-            setFieldValue('emergency-phone', PET_VETS.emergency.phone);
-            setFieldValue('emergency-address', PET_VETS.emergency.address);
+            return card;
         }
 
         // ==========================================
         // LABS
         // ==========================================
         function initializeLabs() {
-            if (typeof PET_LABS === 'undefined') return;
-
             const tbody = document.getElementById('labs-tbody');
             if (!tbody) return;
 
-            PET_LABS.forEach(lab => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-            <td>${formatDate(lab.date)}</td>
-            <td class="text-left">${lab.type}</td>
-            <td>${lab.lab}</td>
-            <td class="text-left">${lab.result}</td>
-            <td>${lab.vet}</td>
-            <td><button class="mhm-btn" style="padding: 5px 10px; min-width: auto;"><i class="fas fa-paperclip"></i></button></td>
-        `;
-                tbody.appendChild(row);
-            });
+            // First try to load saved labs from petManager
+            const currentPet = petManager.getCurrentPet();
+            const savedLabs = currentPet?.data?.labs;
 
-            // Add empty rows
+            // Load saved labs if exist
+            if (savedLabs && savedLabs.length > 0) {
+                savedLabs.forEach(lab => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                <td><input type="date" class="mhm-input" value="${lab.date || ''}" style="padding: 4px;"></td>
+                <td><input type="text" class="mhm-input" value="${lab.type || ''}" style="padding: 4px;"></td>
+                <td><input type="text" class="mhm-input" value="${lab.lab || ''}" style="padding: 4px;"></td>
+                <td><input type="text" class="mhm-input" value="${lab.result || ''}" style="padding: 4px;"></td>
+                <td><input type="text" class="mhm-input" value="${lab.vet || ''}" style="padding: 4px;"></td>
+                <td><button class="mhm-btn" style="padding: 5px 10px; min-width: auto;"><i class="fas fa-paperclip"></i></button></td>
+            `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            // Add empty rows for new entries
             for (let i = 0; i < 3; i++) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -7184,37 +7509,32 @@
         // NUTRITION
         // ==========================================
         function initializeNutrition() {
-            if (typeof PET_NUTRITION === 'undefined') return;
+            // First try to load saved nutrition from petManager
+            const currentPet = petManager.getCurrentPet();
+            const savedNutrition = currentPet?.data?.nutrition;
 
-            const nutr = PET_NUTRITION;
+            // Only populate fields if we have saved data
+            if (savedNutrition) {
+                setSelectValue('food-type', savedNutrition.foodType);
+                setFieldValue('food-brand', savedNutrition.brand);
+                setFieldValue('food-line', savedNutrition.line);
+                setFieldValue('food-quantity', savedNutrition.dailyQuantity);
+                if (savedNutrition.frequency) {
+                    setSelectValue('food-frequency', savedNutrition.frequency.toString());
+                }
 
-            setSelectValue('food-type', nutr.foodType);
-            setFieldValue('food-brand', nutr.brand);
-            setFieldValue('food-line', nutr.line);
-            setFieldValue('food-quantity', nutr.dailyQuantity);
-            setSelectValue('food-frequency', nutr.frequency.toString());
+                if (savedNutrition.givesSnacks !== undefined) {
+                    setRadioValue('gives-snacks', savedNutrition.givesSnacks ? 'si' : 'no');
+                }
+                setFieldValue('snack-types', savedNutrition.snackTypes);
 
-            setRadioValue('gives-snacks', nutr.givesSnacks ? 'si' : 'no');
-            setFieldValue('snack-types', nutr.snackTypes);
+                setFieldValue('current-weight', savedNutrition.currentWeight);
+                setFieldValue('ideal-weight', savedNutrition.idealWeight);
+                if (savedNutrition.bodyCondition) {
+                    setSelectValue('body-condition', savedNutrition.bodyCondition.toString());
+                }
 
-            setFieldValue('current-weight', nutr.currentWeight);
-            setFieldValue('ideal-weight', nutr.idealWeight);
-            setSelectValue('body-condition', nutr.bodyCondition.toString());
-
-            setFieldValue('nutrition-notes', nutr.notes);
-
-            // Weight history
-            const weightTbody = document.getElementById('weight-history-tbody');
-            if (weightTbody) {
-                nutr.weightHistory.forEach(record => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                <td>${formatDate(record.date)}</td>
-                <td style="font-weight: 600;">${record.weight} kg</td>
-                <td class="text-left">${record.notes}</td>
-            `;
-                    weightTbody.appendChild(row);
-                });
+                setFieldValue('nutrition-notes', savedNutrition.notes);
             }
         }
 
@@ -7442,10 +7762,50 @@
                 }
             };
 
+            // Collect Pathologies
+            const pathologies = collectPathologiesData();
+
+            // Collect Medications
+            const medications = collectMedicationsData();
+
+            // Collect Preventives
+            const preventives = collectPreventivesData();
+
+            // Collect Surgeries
+            const surgeries = collectSurgeriesData();
+
+            // Collect Sterilization
+            const sterilization = collectSterilizationData();
+
+            // Collect Allergies
+            const allergies = collectAllergiesData();
+
+            // Collect Vaccines
+            const vaccines = collectVaccinesData();
+
+            // Collect Veterinarians
+            const vets = collectVetsData();
+
+            // Collect Labs
+            const labs = collectLabsData();
+
+            // Collect Nutrition
+            const nutrition = collectNutritionData();
+
             // Update data including name at pet level
             const updateData = {
                 petInfo: petInfo,
-                ownerInfo: ownerInfo
+                ownerInfo: ownerInfo,
+                pathologies: pathologies,
+                medications: medications,
+                preventives: preventives,
+                surgeries: surgeries,
+                sterilization: sterilization,
+                allergies: allergies,
+                vaccines: vaccines,
+                vets: vets,
+                labs: labs,
+                nutrition: nutrition
             };
 
             // Also update the pet name at the top level
@@ -7462,6 +7822,325 @@
             // Save to manager
             petManager.updateCurrentPet(updateData);
             console.log('✅ Auto-saved:', currentPet.name);
+        }
+
+        // ==========================================
+        // DATA COLLECTION FUNCTIONS
+        // ==========================================
+        function collectPathologiesData() {
+            const pathologies = {
+                cardio: [],
+                musculo: [],
+                digestive: [],
+                skin: [],
+                sensory: [],
+                neuro: [],
+                other: getVal('patho-other')
+            };
+
+            const groupMap = {
+                'patho-cardio': 'cardio',
+                'patho-musculo': 'musculo',
+                'patho-digestive': 'digestive',
+                'patho-skin': 'skin',
+                'patho-sensory': 'sensory',
+                'patho-neuro': 'neuro'
+            };
+
+            Object.keys(groupMap).forEach(containerId => {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    const checkboxes = container.querySelectorAll('input[type="checkbox"]:checked');
+                    checkboxes.forEach(cb => {
+                        const label = cb.closest('label');
+                        if (label) {
+                            const span = label.querySelector('span[data-i18n]');
+                            if (span && span.dataset.i18n) {
+                                pathologies[groupMap[containerId]].push(span.dataset.i18n);
+                            }
+                        }
+                    });
+                }
+            });
+
+            return pathologies;
+        }
+
+        function collectMedicationsData() {
+            const medications = [];
+            const tbody = document.getElementById('meds-tbody');
+            if (tbody) {
+                const rows = tbody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    if (inputs.length >= 6) {
+                        const startDate = inputs[0].value;
+                        const name = inputs[1].value;
+                        const dose = inputs[2].value;
+                        const frequency = inputs[3].value;
+                        const reason = inputs[4].value;
+                        const active = inputs[5].checked;
+
+                        // Only save if medication has a name
+                        if (name.trim()) {
+                            medications.push({
+                                startDate,
+                                name,
+                                dose,
+                                frequency,
+                                reason,
+                                active
+                            });
+                        }
+                    }
+                });
+            }
+            return medications;
+        }
+
+        function collectPreventivesData() {
+            return {
+                fleaTick: {
+                    product: getVal('flea-product'),
+                    lastDate: getVal('flea-date'),
+                    nextDate: getVal('flea-next')
+                },
+                dewormer: {
+                    product: getVal('dewormer-product'),
+                    lastDate: getVal('dewormer-date'),
+                    nextDate: getVal('dewormer-next')
+                },
+                heartworm: {
+                    product: getVal('heartworm-product'),
+                    lastDate: getVal('heartworm-date'),
+                    nextDate: getVal('heartworm-next')
+                }
+            };
+        }
+
+        function collectSurgeriesData() {
+            const surgeries = [];
+            const tbody = document.getElementById('surgeries-tbody');
+            if (tbody) {
+                const rows = tbody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    if (inputs.length >= 5) {
+                        const date = inputs[0].value;
+                        const procedure = inputs[1].value;
+                        const clinic = inputs[2].value;
+                        const vet = inputs[3].value;
+                        const notes = inputs[4].value;
+
+                        // Only save if procedure has a name
+                        if (procedure.trim()) {
+                            surgeries.push({ date, procedure, clinic, vet, notes });
+                        }
+                    }
+                });
+            }
+            return surgeries;
+        }
+
+        function collectSterilizationData() {
+            return {
+                done: getRadioVal('sterilization') === 'si',
+                date: getVal('sterilization-date'),
+                clinic: getVal('sterilization-clinic')
+            };
+        }
+
+        function collectAllergiesData() {
+            const foodAllergies = [];
+            ['chicken', 'beef', 'wheat', 'corn', 'soy', 'dairy', 'fish', 'eggs'].forEach(food => {
+                const cb = document.getElementById(`allergy-${food}`);
+                if (cb && cb.checked) {
+                    foodAllergies.push(food);
+                }
+            });
+
+            const medicationAllergies = [];
+            const medContainer = document.getElementById('med-allergies-container');
+            if (medContainer) {
+                const rows = medContainer.querySelectorAll('.mhm-form-row');
+                rows.forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    if (inputs.length >= 2 && inputs[0].value.trim()) {
+                        medicationAllergies.push({
+                            name: inputs[0].value,
+                            reaction: inputs[1].value
+                        });
+                    }
+                });
+            }
+
+            const environmentalAllergies = [];
+            const envContainer = document.getElementById('env-allergies-container');
+            if (envContainer) {
+                const rows = envContainer.querySelectorAll('.mhm-form-row');
+                rows.forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    if (inputs.length >= 2 && inputs[0].value.trim()) {
+                        environmentalAllergies.push({
+                            name: inputs[0].value,
+                            reaction: inputs[1].value
+                        });
+                    }
+                });
+            }
+
+            return {
+                food: foodAllergies,
+                medications: medicationAllergies,
+                environmental: environmentalAllergies,
+                reactions: getVal('allergy-reactions')
+            };
+        }
+
+        function collectVaccinesData() {
+            const vaccines = { dog: [], cat: [] };
+
+            // Collect dog vaccines
+            const dogTbody = document.getElementById('dog-vaccines-tbody');
+            if (dogTbody) {
+                const rows = dogTbody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 6) {
+                        const name = cells[0].textContent.trim();
+                        const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+                        const dateInput = row.querySelector('input[type="date"]');
+                        vaccines.dog.push({
+                            name,
+                            dose1Applied: checkboxes[0]?.checked || false,
+                            dose2Applied: checkboxes[1]?.checked || false,
+                            dose3Applied: checkboxes[2]?.checked || false,
+                            annualApplied: checkboxes[3]?.checked || false,
+                            nextDate: dateInput?.value || ''
+                        });
+                    }
+                });
+            }
+
+            // Collect cat vaccines
+            const catTbody = document.getElementById('cat-vaccines-tbody');
+            if (catTbody) {
+                const rows = catTbody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 5) {
+                        const name = cells[0].textContent.trim();
+                        const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+                        const dateInput = row.querySelector('input[type="date"]');
+                        vaccines.cat.push({
+                            name,
+                            dose1Applied: checkboxes[0]?.checked || false,
+                            dose2Applied: checkboxes[1]?.checked || false,
+                            dose3Applied: checkboxes[2]?.checked || false,
+                            nextDate: dateInput?.value || ''
+                        });
+                    }
+                });
+            }
+
+            return vaccines;
+        }
+
+        function collectVetsData() {
+            return {
+                main: {
+                    name: getVal('vet-main-name'),
+                    specialty: getVal('vet-main-specialty'),
+                    clinic: getVal('vet-main-clinic'),
+                    phone: getVal('vet-main-phone'),
+                    cell: getVal('vet-main-cell'),
+                    address: getVal('vet-main-address'),
+                    hours: getVal('vet-main-hours')
+                },
+                specialists: collectSpecialistsData(),
+                emergency: {
+                    name: getVal('emergency-clinic'),
+                    phone: getVal('emergency-phone'),
+                    address: getVal('emergency-address')
+                }
+            };
+        }
+
+        function collectSpecialistsData() {
+            const specialists = [];
+            const container = document.getElementById('specialists-container');
+            if (container) {
+                const cards = container.querySelectorAll('.mhm-card');
+                cards.forEach(card => {
+                    const inputs = card.querySelectorAll('input');
+                    if (inputs.length >= 5) {
+                        const name = inputs[0].value;
+                        const specialty = inputs[1].value;
+                        const clinic = inputs[2].value;
+                        const phone = inputs[3].value;
+                        const cell = inputs[4].value;
+
+                        if (name.trim()) {
+                            specialists.push({ name, specialty, clinic, phone, cell });
+                        }
+                    }
+                });
+            }
+            return specialists;
+        }
+
+        function collectLabsData() {
+            const labs = [];
+            const tbody = document.getElementById('labs-tbody');
+            if (tbody) {
+                const rows = tbody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    // Check if this row has inputs (editable) or just text (display)
+                    if (inputs.length >= 5) {
+                        const date = inputs[0].value;
+                        const type = inputs[1].value;
+                        const lab = inputs[2].value;
+                        const result = inputs[3].value;
+                        const vet = inputs[4].value;
+
+                        if (type.trim()) {
+                            labs.push({ date, type, lab, result, vet });
+                        }
+                    } else {
+                        // Read from cells for display-only rows
+                        const cells = row.querySelectorAll('td');
+                        if (cells.length >= 5) {
+                            const date = cells[0].textContent.trim();
+                            const type = cells[1].textContent.trim();
+                            const lab = cells[2].textContent.trim();
+                            const result = cells[3].textContent.trim();
+                            const vet = cells[4].textContent.trim();
+
+                            if (type) {
+                                labs.push({ date, type, lab, result, vet });
+                            }
+                        }
+                    }
+                });
+            }
+            return labs;
+        }
+
+        function collectNutritionData() {
+            return {
+                foodType: getVal('food-type'),
+                brand: getVal('food-brand'),
+                line: getVal('food-line'),
+                dailyQuantity: getVal('food-quantity'),
+                frequency: parseInt(getVal('food-frequency')) || 2,
+                givesSnacks: getRadioVal('gives-snacks') === 'si',
+                snackTypes: getVal('snack-types'),
+                currentWeight: getVal('current-weight'),
+                idealWeight: getVal('ideal-weight'),
+                bodyCondition: parseInt(getVal('body-condition')) || 5,
+                notes: getVal('nutrition-notes')
+            };
         }
 
         // ==========================================
@@ -7665,17 +8344,23 @@
             const petWeight = getVal('current-weight') || PET_NUTRITION?.currentWeight || '';
             const petMicrochip = getVal('pet-microchip') || PET_DATA?.microchip || '';
             const petAge = getVal('pet-age') || PET_DATA?.age || '';
+            const petColor = getVal('pet-color') || '';
+            const petBirthdate = getVal('pet-birthdate') || '';
+            const petGender = document.querySelector('input[name="pet-gender"]:checked')?.value || '';
+            const petSterilized = document.querySelector('input[name="pet-sterilized"]:checked')?.value || '';
 
             const ownerName = getVal('owner-name') || OWNER_DATA?.name || '';
             const ownerCell = getVal('owner-cell') || OWNER_DATA?.cellPhone || '';
             const ownerEmail = getVal('owner-email') || OWNER_DATA?.email || '';
+            const ownerPhone = getVal('owner-phone') || '';
+            const ownerAddress = getVal('owner-address') || '';
 
             const vetName = getVal('vet-main-name') || PET_VETS?.main?.name || '';
             const vetClinic = getVal('vet-main-clinic') || PET_VETS?.main?.clinic || '';
             const vetPhone = getVal('vet-main-phone') || PET_VETS?.main?.phone || '';
             const vetCell = getVal('vet-main-cell') || PET_VETS?.main?.cell || '';
 
-            // Get food allergies
+            // Get food allergies (common food allergies)
             const foodAllergies = [];
             ['chicken', 'beef', 'wheat', 'corn', 'soy', 'dairy', 'fish', 'eggs'].forEach(food => {
                 const cb = document.getElementById(`allergy-${food}`);
@@ -7684,12 +8369,147 @@
                 }
             });
 
-            // Get active medications
-            const activeMeds = [];
-            if (typeof PET_MEDICATIONS !== 'undefined') {
-                PET_MEDICATIONS.filter(m => m.active).forEach(m => {
-                    activeMeds.push(`<li><strong>${m.name}</strong> - ${m.dose} (${m.frequency})</li>`);
+            // Get pathological history (antecedentes patológicos)
+            const pathologyGroups = {
+                cardio: { name: currentLanguage === 'en' ? 'Cardiovascular' : 'Cardiovascular', ids: ['heart-murmur', 'heart-failure', 'arrhythmia', 'chronic-cough'] },
+                musculo: { name: currentLanguage === 'en' ? 'Musculoskeletal' : 'Musculoesquelético', ids: ['hip-dysplasia', 'elbow-dysplasia', 'arthritis', 'patella-luxation', 'disc-hernia'] },
+                digestive: { name: currentLanguage === 'en' ? 'Digestive' : 'Digestivo', ids: ['gastritis', 'pancreatitis', 'ibd', 'intestinal-parasites', 'frequent-vomiting'] },
+                skin: { name: currentLanguage === 'en' ? 'Skin/Dermatological' : 'Piel/Dermatológico', ids: ['allergic-dermatitis', 'fungi', 'mange', 'hotspots', 'hair-loss'] },
+                sensory: { name: currentLanguage === 'en' ? 'Sensory (Eyes/Ears)' : 'Sensorial (Ojos/Oídos)', ids: ['cataracts', 'glaucoma', 'recurrent-otitis', 'deafness', 'conjunctivitis'] },
+                neuro: { name: currentLanguage === 'en' ? 'Neurological/Behavioral' : 'Neurológico/Conductual', ids: ['epilepsy', 'separation-anxiety', 'aggression', 'noise-phobia', 'vestibular-syndrome'] }
+            };
+
+            const selectedPathologies = [];
+            Object.keys(pathologyGroups).forEach(groupKey => {
+                const group = pathologyGroups[groupKey];
+                const checkedInGroup = [];
+                group.ids.forEach(id => {
+                    const cb = document.getElementById(`patho-${id}`);
+                    if (cb && cb.checked) {
+                        // Get the label text
+                        const label = cb.closest('label')?.querySelector('span')?.textContent || id;
+                        checkedInGroup.push(label);
+                    }
                 });
+                if (checkedInGroup.length > 0) {
+                    selectedPathologies.push({
+                        category: group.name,
+                        conditions: checkedInGroup
+                    });
+                }
+            });
+
+            // Get active medications from form inputs
+            const activeMeds = [];
+            const medRows = document.querySelectorAll('#medications-body tr');
+            medRows.forEach(row => {
+                const cells = row.querySelectorAll('td input');
+                if (cells.length >= 3) {
+                    const name = cells[0]?.value?.trim();
+                    const dose = cells[1]?.value?.trim();
+                    const frequency = cells[2]?.value?.trim();
+                    if (name) {
+                        activeMeds.push(`<li><strong>${name}</strong>${dose ? ` - ${dose}` : ''}${frequency ? ` (${frequency})` : ''}</li>`);
+                    }
+                }
+            });
+
+            // Get vaccination scheme data
+            const appliedVaccines = [];
+            const pendingVaccines = [];
+
+            // Dog vaccines
+            const dogVaxRows = document.querySelectorAll('#dog-vaccines-tbody tr');
+            dogVaxRows.forEach(row => {
+                const vaccineName = row.querySelector('td')?.textContent?.trim();
+                const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+                const dateInput = row.querySelector('input[type="date"]');
+
+                if (vaccineName) {
+                    const dose1 = checkboxes[0]?.checked;
+                    const dose2 = checkboxes[1]?.checked;
+                    const dose3 = checkboxes[2]?.checked;
+                    const annual = checkboxes[3]?.checked;
+                    const nextDate = dateInput?.value;
+
+                    const appliedDoses = [];
+                    if (dose1) appliedDoses.push(currentLanguage === 'en' ? '1st dose' : '1ª dosis');
+                    if (dose2) appliedDoses.push(currentLanguage === 'en' ? '2nd dose' : '2ª dosis');
+                    if (dose3) appliedDoses.push(currentLanguage === 'en' ? '3rd dose' : '3ª dosis');
+                    if (annual) appliedDoses.push(currentLanguage === 'en' ? 'Annual' : 'Anual');
+
+                    if (appliedDoses.length > 0) {
+                        appliedVaccines.push({ name: vaccineName, doses: appliedDoses.join(', '), type: 'dog' });
+                    }
+
+                    if (nextDate) {
+                        pendingVaccines.push({ name: vaccineName, date: nextDate, type: 'dog' });
+                    }
+                }
+            });
+
+            // Cat vaccines
+            const catVaxRows = document.querySelectorAll('#cat-vaccines-tbody tr');
+            catVaxRows.forEach(row => {
+                const vaccineName = row.querySelector('td')?.textContent?.trim();
+                const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+                const dateInput = row.querySelector('input[type="date"]');
+
+                if (vaccineName) {
+                    const dose1 = checkboxes[0]?.checked;
+                    const dose2 = checkboxes[1]?.checked;
+                    const dose3 = checkboxes[2]?.checked;
+                    const nextDate = dateInput?.value;
+
+                    const appliedDoses = [];
+                    if (dose1) appliedDoses.push(currentLanguage === 'en' ? '1st dose' : '1ª dosis');
+                    if (dose2) appliedDoses.push(currentLanguage === 'en' ? '2nd dose' : '2ª dosis');
+                    if (dose3) appliedDoses.push(currentLanguage === 'en' ? '3rd dose' : '3ª dosis');
+
+                    if (appliedDoses.length > 0) {
+                        appliedVaccines.push({ name: vaccineName, doses: appliedDoses.join(', '), type: 'cat' });
+                    }
+
+                    if (nextDate) {
+                        pendingVaccines.push({ name: vaccineName, date: nextDate, type: 'cat' });
+                    }
+                }
+            });
+
+            // Build pathologies HTML
+            let pathologiesHTML = '';
+            if (selectedPathologies.length > 0) {
+                pathologiesHTML = selectedPathologies.map(p =>
+                    `<div style="margin-bottom: 8px;">
+                        <strong style="color: #6a1b9a;">${p.category}:</strong>
+                        <span style="color: #333;">${p.conditions.join(', ')}</span>
+                    </div>`
+                ).join('');
+            } else {
+                pathologiesHTML = `<p style="color: #666; font-style: italic;">${currentLanguage === 'en' ? 'No pathological history recorded' : 'Sin antecedentes patológicos registrados'}</p>`;
+            }
+
+            // Build vaccination scheme HTML
+            let vaccinesHTML = '';
+            if (appliedVaccines.length > 0 || pendingVaccines.length > 0) {
+                if (appliedVaccines.length > 0) {
+                    vaccinesHTML += `<div style="margin-bottom: 10px;">
+                        <strong style="color: #2e7d32;">${currentLanguage === 'en' ? 'Applied Vaccines:' : 'Vacunas Aplicadas:'}</strong>
+                        <ul style="margin: 5px 0 0 20px; padding: 0;">
+                            ${appliedVaccines.map(v => `<li><strong>${v.name}</strong> - ${v.doses}</li>`).join('')}
+                        </ul>
+                    </div>`;
+                }
+                if (pendingVaccines.length > 0) {
+                    vaccinesHTML += `<div>
+                        <strong style="color: #f57c00;">${currentLanguage === 'en' ? 'Next Vaccines:' : 'Próximas Vacunas:'}</strong>
+                        <ul style="margin: 5px 0 0 20px; padding: 0;">
+                            ${pendingVaccines.map(v => `<li><strong>${v.name}</strong> - ${new Date(v.date).toLocaleDateString(currentLanguage === 'en' ? 'en-US' : 'es-CO')}</li>`).join('')}
+                        </ul>
+                    </div>`;
+                }
+            } else {
+                vaccinesHTML = `<p style="color: #666; font-style: italic;">${currentLanguage === 'en' ? 'No vaccination records' : 'Sin registros de vacunación'}</p>`;
             }
 
             body.innerHTML = `
@@ -7704,42 +8524,64 @@
                 <h3 style="margin-top: 0; color: #1b5e20;"><i class="fas fa-dog"></i> ${t('petData')}</h3>
                 <p><strong>${t('petName')}:</strong> ${petName}</p>
                 <p><strong>${t('species')}/${t('breed')}:</strong> ${petSpecies} - ${petBreed}</p>
-                <p><strong>${t('age')}:</strong> ${petAge}</p>
-                <p><strong>${t('weight')}:</strong> ${petWeight} kg</p>
-                <p><strong>${t('microchip')}:</strong> ${petMicrochip}</p>
+                <p><strong>${currentLanguage === 'en' ? 'Color/Coat' : 'Color/Pelaje'}:</strong> ${petColor || '-'}</p>
+                <p><strong>${t('age')}:</strong> ${petAge || '-'}</p>
+                <p><strong>${currentLanguage === 'en' ? 'Date of Birth' : 'Fecha de Nacimiento'}:</strong> ${petBirthdate || '-'}</p>
+                <p><strong>${currentLanguage === 'en' ? 'Gender' : 'Sexo'}:</strong> ${petGender ? (currentLanguage === 'en' ? (petGender === 'male' ? 'Male' : 'Female') : (petGender === 'male' ? 'Macho' : 'Hembra')) : '-'}</p>
+                <p><strong>${currentLanguage === 'en' ? 'Spayed/Neutered' : 'Esterilizado'}:</strong> ${petSterilized ? (currentLanguage === 'en' ? (petSterilized === 'yes' ? 'Yes' : 'No') : (petSterilized === 'yes' ? 'Sí' : 'No')) : '-'}</p>
+                <p><strong>${t('weight')}:</strong> ${petWeight ? petWeight + ' kg' : '-'}</p>
+                <p><strong>${t('microchip')}:</strong> ${petMicrochip || '-'}</p>
             </div>
             
             <!-- Owner Info -->
             <div style="background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 4px solid #ff7043;">
                 <h3 style="margin-top: 0; color: #e64a19;"><i class="fas fa-user"></i> ${t('owner')}</h3>
-                <p><strong>${t('fullName')}:</strong> ${ownerName}</p>
-                <p><strong>${t('phone')}:</strong> ${ownerCell}</p>
-                <p><strong>${t('email')}:</strong> ${ownerEmail}</p>
+                <p><strong>${t('fullName')}:</strong> ${ownerName || '-'}</p>
+                <p><strong>${currentLanguage === 'en' ? 'Cell Phone' : 'Celular'}:</strong> ${ownerCell || '-'}</p>
+                <p><strong>${currentLanguage === 'en' ? 'Home Phone' : 'Teléfono Fijo'}:</strong> ${ownerPhone || '-'}</p>
+                <p><strong>${t('email')}:</strong> ${ownerEmail || '-'}</p>
+                <p><strong>${currentLanguage === 'en' ? 'Address' : 'Dirección'}:</strong> ${ownerAddress || '-'}</p>
             </div>
         </div>
-        
-        <!-- Allergies Alert -->
-        <div style="background: #ffebee; padding: 15px; border-radius: 8px; border-left: 4px solid #d32f2f; margin-bottom: 20px;">
-            <h3 style="margin-top: 0; color: #c62828;"><i class="fas fa-exclamation-triangle"></i> ${t('alertsAllergies')}</h3>
-            ${foodAllergies.length > 0 ? `<p><strong>${t('foods')}:</strong> ${foodAllergies.join(', ')}</p>` : `<p>${t('foods')}: -</p>`}
+
+        <!-- Pathological History -->
+        <div style="background: #f3e5f5; padding: 15px; border-radius: 8px; border-left: 4px solid #7b1fa2; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #6a1b9a;"><i class="fas fa-notes-medical"></i> ${currentLanguage === 'en' ? 'Pathological History' : 'Antecedentes Patológicos'}</h3>
+            ${pathologiesHTML}
         </div>
         
-        <!-- Medications -->
+        <!-- Common Food Allergies Alert -->
+        <div style="background: #ffebee; padding: 15px; border-radius: 8px; border-left: 4px solid #d32f2f; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #c62828;"><i class="fas fa-exclamation-triangle"></i> ${currentLanguage === 'en' ? 'Common Food Allergies' : 'Alergias Alimentarias Comunes'}</h3>
+            ${foodAllergies.length > 0
+                    ? `<p style="font-size: 1rem;"><strong style="color: #c62828;">${currentLanguage === 'en' ? 'Allergic to:' : 'Alérgico a:'}</strong> ${foodAllergies.join(', ')}</p>`
+                    : `<p style="color: #666; font-style: italic;">${currentLanguage === 'en' ? 'No common food allergies recorded' : 'Sin alergias alimentarias comunes registradas'}</p>`}
+        </div>
+        
+        <!-- Vaccination Scheme -->
+        <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border-left: 4px solid #43a047; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #2e7d32;"><i class="fas fa-syringe"></i> ${currentLanguage === 'en' ? 'Vaccination Scheme' : 'Esquema de Vacunación'}</h3>
+            ${vaccinesHTML}
+        </div>
+        
+        <!-- Current Medications -->
         <div style="margin-bottom: 20px;">
-            <h3 style="background: #e8f5e9; padding: 10px; border-left: 5px solid #388e3c;">
+            <h3 style="background: #fff8e1; padding: 10px; border-left: 5px solid #ff8f00; margin-bottom: 10px;">
                 <i class="fas fa-pills"></i> ${t('currentMeds')}
             </h3>
-            <ul style="padding-left: 20px;">
-                ${activeMeds.length > 0 ? activeMeds.join('') : '<li>-</li>'}
+            <ul style="padding-left: 20px; margin: 0;">
+                ${activeMeds.length > 0 ? activeMeds.join('') : `<li style="color: #666; font-style: italic;">${currentLanguage === 'en' ? 'No medications recorded' : 'Sin medicamentos registrados'}</li>`}
             </ul>
         </div>
         
         <!-- Vet Info -->
-        <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <h3 style="margin-top: 0; color: #333;"><i class="fas fa-user-md"></i> ${t('mainVet')}</h3>
-            <p><strong>${vetName}</strong></p>
-            <p>${vetClinic}</p>
-            <p>Tel: ${vetPhone} | Cel: ${vetCell}</p>
+        <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #1976d2; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #1565c0;"><i class="fas fa-user-md"></i> ${t('mainVet')}</h3>
+            ${vetName ? `
+                <p><strong>${vetName}</strong></p>
+                <p>${vetClinic || '-'}</p>
+                <p>Tel: ${vetPhone || '-'} | Cel: ${vetCell || '-'}</p>
+            ` : `<p style="color: #666; font-style: italic;">${currentLanguage === 'en' ? 'No veterinarian recorded' : 'Sin veterinario registrado'}</p>`}
         </div>
         
         <!-- Footer -->
