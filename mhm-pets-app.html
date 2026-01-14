@@ -10130,24 +10130,85 @@
                 return;
             }
 
-            try {
-                const btn = event.target.closest('.settings-item');
-                if (btn) btn.style.opacity = '0.6';
+            const btn = event?.target?.closest('.settings-item');
+            if (btn) btn.style.opacity = '0.6';
 
-                await cloudStorage.savePetsToCloud(petManager.getAllPets());
+            try {
+                console.log('🔄 Starting manual sync...');
+
+                // 1. Load cloud data
+                const cloudData = await cloudStorage.load();
+                console.log('☁️ Cloud data received:', cloudData);
+
+                // 2. Get local data
+                const localPets = petManager.getAllPets();
+                const localLastModified = await hybridStorage.getItem('mhm-mascota-last-modified');
+
+                console.log('💻 Local pets:', localPets.length);
+                console.log('📅 Local last modified:', localLastModified);
+
+                let syncResult = '';
+
+                if (cloudData && cloudData.pets && cloudData.pets.length > 0) {
+                    const cloudLastModified = cloudData.savedAt || cloudData.lastModified;
+
+                    const localDate = localLastModified ? new Date(localLastModified) : new Date(0);
+                    const cloudDate = cloudLastModified ? new Date(cloudLastModified) : new Date(0);
+
+                    console.log('📅 Comparing dates - Local:', localDate.toISOString(), 'Cloud:', cloudDate.toISOString());
+
+                    if (cloudDate > localDate) {
+                        // Cloud is newer - download
+                        console.log('☁️ Cloud is NEWER, downloading...');
+                        petManager.pets = cloudData.pets;
+                        if (cloudData.currentPetId) {
+                            petManager.currentPetId = cloudData.currentPetId;
+                        }
+                        await petManager.savePetsAsync();
+
+                        // Refresh UI
+                        updatePetSelector();
+                        switchToPet(petManager.currentPetId);
+
+                        syncResult = currentLanguage === 'en'
+                            ? `☁️ Downloaded ${cloudData.pets.length} pet(s) from cloud`
+                            : `☁️ Descargado ${cloudData.pets.length} mascota(s) de la nube`;
+                    } else if (localDate > cloudDate) {
+                        // Local is newer - upload
+                        console.log('💻 Local is NEWER, uploading...');
+                        await petManager.saveToCloud();
+
+                        syncResult = currentLanguage === 'en'
+                            ? `☁️ Uploaded ${localPets.length} pet(s) to cloud`
+                            : `☁️ Subido ${localPets.length} mascota(s) a la nube`;
+                    } else {
+                        syncResult = currentLanguage === 'en'
+                            ? '✅ Already in sync'
+                            : '✅ Ya está sincronizado';
+                    }
+                } else {
+                    // No cloud data, upload local
+                    console.log('☁️ No cloud data, uploading local...');
+                    await petManager.saveToCloud();
+
+                    syncResult = currentLanguage === 'en'
+                        ? `☁️ Uploaded ${localPets.length} pet(s) to cloud`
+                        : `☁️ Subido ${localPets.length} mascota(s) a la nube`;
+                }
 
                 // Update sync count
                 let syncCount = parseInt(localStorage.getItem('mhm_sync_count') || '0');
                 syncCount++;
                 localStorage.setItem('mhm_sync_count', syncCount.toString());
 
-                alert(currentLanguage === 'en' ? '✅ Data synced to cloud' : '✅ Datos sincronizados con la nube');
+                alert(syncResult);
 
                 if (btn) btn.style.opacity = '1';
                 updateUserPanelAccount(); // Refresh stats
             } catch (e) {
                 console.error('Error syncing:', e);
-                alert(currentLanguage === 'en' ? '❌ Sync error' : '❌ Error de sincronización');
+                alert(currentLanguage === 'en' ? '❌ Sync error: ' + e.message : '❌ Error de sincronización: ' + e.message);
+                if (btn) btn.style.opacity = '1';
             }
         }
 
