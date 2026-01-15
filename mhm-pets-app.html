@@ -6955,9 +6955,9 @@
                 }
             });
 
-            // Add new pet button - IMPROVED
+            // Add new pet button - IMPROVED with cloud sync before reload
             if (petAddBtn) {
-                petAddBtn.addEventListener('click', function (e) {
+                petAddBtn.addEventListener('click', async function (e) {
                     e.preventDefault();
                     e.stopPropagation();
 
@@ -6982,7 +6982,17 @@
 
                         if (result.success) {
                             console.log('✅ Pet created, switching...');
-                            petManager.switchPet(result.pet.id);
+                            await petManager.switchPet(result.pet.id);
+
+                            // ⚠️ CRITICAL FIX: Wait for cloud save to complete before reloading
+                            // Cancel the debounced save and force immediate cloud sync
+                            if (petManager.cloudSaveTimeout) {
+                                clearTimeout(petManager.cloudSaveTimeout);
+                            }
+                            console.log('☁️ Forcing cloud sync before reload...');
+                            await petManager.saveToCloud();
+                            console.log('☁️ Cloud sync complete, reloading page...');
+
                             window.location.reload();
                         } else {
                             console.log('❌ Failed:', result.message);
@@ -7031,14 +7041,20 @@
                     }
                 });
 
-                // Delete button
+                // Delete button - with cloud sync before reload
                 const deleteBtn = petItem.querySelector('.pet-item-delete');
                 if (deleteBtn) {
-                    deleteBtn.addEventListener('click', function (e) {
+                    deleteBtn.addEventListener('click', async function (e) {
                         e.stopPropagation();
                         if (confirm(t('confirmDelete'))) {
-                            const result = petManager.deletePet(pet.id);
+                            const result = await petManager.deletePet(pet.id);
                             if (result.success) {
+                                // ⚠️ CRITICAL FIX: Wait for cloud save before reload
+                                if (petManager.cloudSaveTimeout) {
+                                    clearTimeout(petManager.cloudSaveTimeout);
+                                }
+                                console.log('☁️ Syncing deletion to cloud...');
+                                await petManager.saveToCloud();
                                 location.reload();
                             } else {
                                 alert(result.message);
