@@ -31,7 +31,7 @@
 // CONFIGURACIÓN - EDITAR ESTOS VALORES
 // ==========================================
 
-const SHEET_ID = 'TU_SHEET_ID_AQUI'; // El ID de tu Google Sheet
+const SHEET_ID = '1_jNNbqh6HVHLjqDJkwiS2en9_hAVfq1q_yJmTFUz124'; // El ID de tu Google Sheet
 
 // Planes de suscripción
 const SUBSCRIPTION_PLANS = {
@@ -56,6 +56,11 @@ const PAYPAL_PLAN_IDS = {
  * Maneja solicitudes GET (lectura de datos)
  */
 function doGet(e) {
+    // Validación para ejecución manual desde el editor
+    if (!e || !e.parameter) {
+        return createResponse({ status: 'error', message: 'Esta función debe ser llamada vía HTTP, no manualmente' });
+    }
+
     const action = e.parameter.action || 'read';
     const id = e.parameter.id;
 
