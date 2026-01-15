@@ -63,6 +63,27 @@ function doGet(e) {
         switch (action) {
             case 'read':
                 return handleRead(id);
+            // ⚠️ SAVE VIA GET - Alternativa para evitar problemas de CORS con POST
+            case 'save':
+            case 'saveData':
+                // Datos vienen codificados en base64 para evitar problemas con caracteres especiales
+                const encodedData = e.parameter.data;
+                if (encodedData) {
+                    try {
+                        const decodedData = Utilities.newBlob(Utilities.base64Decode(encodedData)).getDataAsString();
+                        const petData = JSON.parse(decodedData);
+                        return handleSave(id, petData);
+                    } catch (decodeError) {
+                        // Intenta como JSON directo (para datos pequeños)
+                        try {
+                            const petData = JSON.parse(decodeURIComponent(encodedData));
+                            return handleSave(id, petData);
+                        } catch (e2) {
+                            return createResponse({ status: 'error', message: 'Error decodificando datos: ' + decodeError.message });
+                        }
+                    }
+                }
+                return createResponse({ status: 'error', message: 'Data required' });
             case 'checkSubscription':
                 return handleCheckSubscription(e.parameter.email, e.parameter.cloudId);
             case 'getSubscribers':

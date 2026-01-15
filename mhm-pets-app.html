@@ -5750,7 +5750,7 @@
                 }
             }
 
-            // Save data to Google Sheets
+            // Save data to Google Sheets - USING GET (more reliable than POST with Apps Script)
             async save(data) {
                 if (!this.isConfigured) {
                     console.log('☁️ Cloud storage not configured - skipping cloud save');
@@ -5758,7 +5758,6 @@
                 }
 
                 console.log('☁️ Saving data to cloud for user:', this.userId);
-                console.log('☁️ Data to save:', JSON.stringify(data).substring(0, 200) + '...');
 
                 // Visual indicator
                 const dateEl = document.getElementById('info-date');
@@ -5769,40 +5768,44 @@
                 }
 
                 try {
-                    // Prepare the payload
-                    const payload = {
-                        action: 'save',
-                        id: this.userId,
-                        data: data
-                    };
+                    // Encode data as base64 to avoid URL encoding issues
+                    const jsonString = JSON.stringify(data);
+                    const base64Data = btoa(unescape(encodeURIComponent(jsonString)));
 
-                    console.log('☁️ Sending POST to:', this.scriptURL);
+                    // Build GET URL with action=save
+                    const saveUrl = this.scriptURL +
+                        "?action=save" +
+                        "&id=" + encodeURIComponent(this.userId) +
+                        "&data=" + encodeURIComponent(base64Data);
 
-                    // Use redirect: follow to handle Google Apps Script redirects
-                    const response = await fetch(this.scriptURL, {
-                        method: 'POST',
-                        redirect: 'follow',
-                        headers: {
-                            'Content-Type': 'text/plain;charset=utf-8'
-                        },
-                        body: JSON.stringify(payload)
+                    console.log('☁️ Saving via GET, URL length:', saveUrl.length);
+
+                    // Check URL length - GET has limits (~8KB for most browsers)
+                    if (saveUrl.length > 8000) {
+                        console.warn('☁️ URL too long for GET, attempting POST fallback...');
+                        return await this.saveViaPost(data, dateEl, originalText);
+                    }
+
+                    const response = await fetch(saveUrl, {
+                        method: 'GET',
+                        redirect: 'follow'
                     });
 
-                    // Try to read the response
                     const responseText = await response.text();
-                    console.log('☁️ Save response:', responseText.substring(0, 300));
+                    console.log('☁️ Save response:', responseText.substring(0, 200));
 
                     // Check if successful
                     let success = false;
                     try {
                         const result = JSON.parse(responseText);
-                        success = result.status === 'success' || result.success === true;
-                        if (!success) {
-                            console.warn('☁️ Save may have failed:', result.message || result);
+                        success = result.status === 'success';
+                        if (success) {
+                            console.log('☁️ ✅ Cloud save successful!');
+                        } else {
+                            console.warn('☁️ Save response:', result.message || result);
                         }
                     } catch (e) {
-                        // Response might not be JSON, but save could still have worked
-                        success = response.ok || responseText.includes('success');
+                        success = responseText.includes('success');
                     }
 
                     if (dateEl) {
@@ -5815,33 +5818,40 @@
                         }, 2000);
                     }
 
-                    console.log('☁️ Cloud save completed, success:', success);
                     return success;
                 } catch (e) {
                     console.error('☁️ Cloud save error:', e);
 
-                    // Fallback: try with no-cors as last resort
-                    console.log('☁️ Attempting fallback with no-cors mode...');
-                    try {
-                        await fetch(this.scriptURL, {
-                            method: 'POST',
-                            mode: 'no-cors',
-                            headers: { 'Content-Type': 'text/plain' },
-                            body: JSON.stringify({ action: 'save', id: this.userId, data: data })
-                        });
-                        console.log('☁️ Fallback request sent (no-cors, unverified)');
+                    // Try POST as fallback
+                    return await this.saveViaPost(data, dateEl, originalText);
+                }
+            }
 
-                        if (dateEl) {
-                            const lang = (typeof currentLanguage !== 'undefined') ? currentLanguage : 'es';
-                            dateEl.innerText = lang === 'en' ? "☁️ Sent" : "☁️ Enviado";
-                            setTimeout(() => {
-                                if (dateEl) dateEl.innerText = originalText || new Date().toLocaleDateString();
-                            }, 2000);
-                        }
-                        return true; // Assume success for fallback
-                    } catch (fallbackError) {
-                        console.error('☁️ Fallback also failed:', fallbackError);
+            // POST fallback for large data
+            async saveViaPost(data, dateEl, originalText) {
+                console.log('☁️ Attempting POST fallback...');
+                try {
+                    const payload = { action: 'save', id: this.userId, data: data };
+
+                    await fetch(this.scriptURL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    console.log('☁️ POST sent (no-cors, cannot verify)');
+
+                    if (dateEl) {
+                        const lang = (typeof currentLanguage !== 'undefined') ? currentLanguage : 'es';
+                        dateEl.innerText = lang === 'en' ? "☁️ Sent" : "☁️ Enviado";
+                        setTimeout(() => {
+                            if (dateEl) dateEl.innerText = originalText || new Date().toLocaleDateString();
+                        }, 2000);
                     }
+                    return true; // Assume success
+                } catch (fallbackError) {
+                    console.error('☁️ POST fallback failed:', fallbackError);
 
                     if (dateEl) {
                         const lang = (typeof currentLanguage !== 'undefined') ? currentLanguage : 'es';
