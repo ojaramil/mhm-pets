@@ -5758,6 +5758,7 @@
                 }
 
                 console.log('☁️ Saving data to cloud for user:', this.userId);
+                console.log('☁️ Data to save:', JSON.stringify(data).substring(0, 200) + '...');
 
                 // Visual indicator
                 const dateEl = document.getElementById('info-date');
@@ -5768,28 +5769,80 @@
                 }
 
                 try {
-                    // Use no-cors mode - we can't read the response but the data IS saved
-                    await fetch(this.scriptURL, {
+                    // Prepare the payload
+                    const payload = {
+                        action: 'save',
+                        id: this.userId,
+                        data: data
+                    };
+
+                    console.log('☁️ Sending POST to:', this.scriptURL);
+
+                    // Use redirect: follow to handle Google Apps Script redirects
+                    const response = await fetch(this.scriptURL, {
                         method: 'POST',
-                        mode: 'no-cors', // Required for Google Apps Script cross-origin
-                        headers: { 'Content-Type': 'text/plain' },
-                        body: JSON.stringify({ id: this.userId, data: data })
+                        redirect: 'follow',
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8'
+                        },
+                        body: JSON.stringify(payload)
                     });
 
-                    // With no-cors we can't verify success, but the request was sent
+                    // Try to read the response
+                    const responseText = await response.text();
+                    console.log('☁️ Save response:', responseText.substring(0, 300));
+
+                    // Check if successful
+                    let success = false;
+                    try {
+                        const result = JSON.parse(responseText);
+                        success = result.status === 'success' || result.success === true;
+                        if (!success) {
+                            console.warn('☁️ Save may have failed:', result.message || result);
+                        }
+                    } catch (e) {
+                        // Response might not be JSON, but save could still have worked
+                        success = response.ok || responseText.includes('success');
+                    }
+
                     if (dateEl) {
                         const lang = (typeof currentLanguage !== 'undefined') ? currentLanguage : 'es';
-                        dateEl.innerText = lang === 'en' ? "✅ Saved" : "✅ Guardado";
-                        // Restore original after 2 seconds
+                        dateEl.innerText = success
+                            ? (lang === 'en' ? "✅ Saved" : "✅ Guardado")
+                            : (lang === 'en' ? "⚠️ Sync issue" : "⚠️ Problema sync");
                         setTimeout(() => {
                             if (dateEl) dateEl.innerText = originalText || new Date().toLocaleDateString();
                         }, 2000);
                     }
 
-                    console.log('☁️ Data sent to cloud (no-cors mode)');
-                    return true;
+                    console.log('☁️ Cloud save completed, success:', success);
+                    return success;
                 } catch (e) {
                     console.error('☁️ Cloud save error:', e);
+
+                    // Fallback: try with no-cors as last resort
+                    console.log('☁️ Attempting fallback with no-cors mode...');
+                    try {
+                        await fetch(this.scriptURL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'text/plain' },
+                            body: JSON.stringify({ action: 'save', id: this.userId, data: data })
+                        });
+                        console.log('☁️ Fallback request sent (no-cors, unverified)');
+
+                        if (dateEl) {
+                            const lang = (typeof currentLanguage !== 'undefined') ? currentLanguage : 'es';
+                            dateEl.innerText = lang === 'en' ? "☁️ Sent" : "☁️ Enviado";
+                            setTimeout(() => {
+                                if (dateEl) dateEl.innerText = originalText || new Date().toLocaleDateString();
+                            }, 2000);
+                        }
+                        return true; // Assume success for fallback
+                    } catch (fallbackError) {
+                        console.error('☁️ Fallback also failed:', fallbackError);
+                    }
+
                     if (dateEl) {
                         const lang = (typeof currentLanguage !== 'undefined') ? currentLanguage : 'es';
                         dateEl.innerText = lang === 'en' ? "❌ Error" : "❌ Error";
